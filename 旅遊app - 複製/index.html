@@ -1,0 +1,3498 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>Family Trip Planner · 2026 韓國跨年旅行</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  html, body { margin: 0; padding: 0;
+    font-family: "Noto Sans TC", -apple-system, system-ui, "PingFang TC", sans-serif;
+    background: #E9DFCA; color: #2A2A2A;
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility; }
+  * { box-sizing: border-box; }
+  ::-webkit-scrollbar { width: 0; height: 0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="module" src="firebase-init.js"></script>
+<script type="text/babel">
+// ═══ foundation.jsx ═══
+// foundation.jsx — design tokens, icons, mock data, shared components
+
+// ─────────────────────────────────────────────────────────────
+// TOKENS
+// ─────────────────────────────────────────────────────────────
+const T = {
+  bg:        '#F6F1E6',
+  bgSoft:    '#FBF7EE',
+  card:      '#FFFFFF',
+  surfaceTint:'#EDE6D6',
+  primary:   '#3F7B8A',
+  primarySoft:'#E1EBEE',
+  primaryDark:'#2A5C68',
+  orange:    '#E89358',
+  orangeSoft:'#FBE6D4',
+  yellow:    '#F2C871',
+  yellowSoft:'#FAEBC8',
+  green:     '#7CA983',
+  greenSoft: '#DDE9D9',
+  rose:      '#C97A82',
+  roseSoft:  '#F3DCDF',
+  ink:       '#2A2A2A',
+  ink2:      '#5A554D',
+  ink3:      '#8A857A',
+  ink4:      '#B5B0A4',
+  divider:   '#ECE5D5',
+  shadowCard: '0 1px 0 rgba(0,0,0,0.02), 0 6px 18px rgba(74,60,32,0.05)',
+  shadowSoft: '0 2px 10px rgba(74,60,32,0.04)',
+  shadowFab:  '0 8px 24px rgba(63,123,138,0.35), 0 2px 6px rgba(63,123,138,0.25)',
+  font: '"Noto Sans TC", -apple-system, system-ui, "PingFang TC", sans-serif',
+};
+
+// ─────────────────────────────────────────────────────────────
+// ICONS
+// ─────────────────────────────────────────────────────────────
+const Icon = ({ name, size = 22, color = 'currentColor', strokeWidth = 1.7 }) => {
+  const p = { fill: 'none', stroke: color, strokeWidth, strokeLinecap: 'round', strokeLinejoin: 'round' };
+  const paths = {
+    home: <><path d="M3.5 11L12 4l8.5 7" {...p}/><path d="M5.5 9.5V20h13V9.5" {...p}/><path d="M10 20v-5h4v5" {...p}/></>,
+    today: <><rect x="3.5" y="5" width="17" height="15" rx="2.5" {...p}/><path d="M3.5 9.5h17M8 3v4M16 3v4" {...p}/><circle cx="12" cy="14" r="2" {...p}/></>,
+    route: <><circle cx="6" cy="6" r="2.2" {...p}/><circle cx="18" cy="18" r="2.2" {...p}/><path d="M8.2 6H14a4 4 0 014 4v0a4 4 0 01-4 4h-4a4 4 0 00-4 4v0" {...p}/></>,
+    wallet: <><path d="M4 8a2 2 0 012-2h12a2 2 0 012 2v9a2 2 0 01-2 2H6a2 2 0 01-2-2V8z" {...p}/><path d="M4 10h16" {...p}/><circle cx="16" cy="14.5" r="1.3" fill={color} stroke="none"/></>,
+    bed: <><path d="M3 18v-7a2 2 0 012-2h14a2 2 0 012 2v7" {...p}/><path d="M3 15h18M3 18v2M21 18v2" {...p}/><path d="M7 9V7a1.5 1.5 0 011.5-1.5h7A1.5 1.5 0 0117 7v2" {...p}/></>,
+    plus: <><path d="M12 5v14M5 12h14" {...p}/></>,
+    pin: <><path d="M12 21s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z" {...p}/><circle cx="12" cy="9" r="2.5" {...p}/></>,
+    map: <><path d="M3 6.5l6-2 6 2 6-2v13l-6 2-6-2-6 2v-13z" {...p}/><path d="M9 4.5v13M15 6.5v13" {...p}/></>,
+    clock: <><circle cx="12" cy="12" r="8.5" {...p}/><path d="M12 7.5V12l3 2" {...p}/></>,
+    chevR: <><path d="M9 5l7 7-7 7" {...p}/></>,
+    chevL: <><path d="M15 5l-7 7 7 7" {...p}/></>,
+    chevD: <><path d="M5 9l7 7 7-7" {...p}/></>,
+    chevU: <><path d="M5 15l7-7 7 7" {...p}/></>,
+    plane: <><path d="M3 13l3-1 3 4 2-.5-2-5 4-1.2 2 2 2-.5-1.5-2.5L20 7l1 1-3 4.5 1 5-1.7.5-3-4.2-3 1-.5 3-1.5.5-.5-3-2.8-1.5z" {...p}/></>,
+    user: <><circle cx="12" cy="8" r="3.5" {...p}/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6" {...p}/></>,
+    users: <><circle cx="9" cy="9" r="3" {...p}/><path d="M3 19c0-3 2.7-5 6-5s6 2 6 5" {...p}/><path d="M15.5 6.5a3 3 0 010 5.5M17 14c2.5.5 4 2.5 4 5" {...p}/></>,
+    split: <><circle cx="6" cy="6" r="2" {...p}/><circle cx="18" cy="6" r="2" {...p}/><circle cx="12" cy="18" r="2" {...p}/><path d="M7.5 7.5l3 9M16.5 7.5l-3 9" {...p}/></>,
+    chart: <><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" {...p}/></>,
+    bookmark: <><path d="M6 4h12v17l-6-4-6 4V4z" {...p}/></>,
+    settings: <><circle cx="12" cy="12" r="3" {...p}/><path d="M19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-1.8-.3 1.6 1.6 0 00-1 1.5V21a2 2 0 01-4 0v-.1a1.6 1.6 0 00-1-1.5 1.6 1.6 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.6 1.6 0 00.3-1.8 1.6 1.6 0 00-1.5-1H3a2 2 0 010-4h.1a1.6 1.6 0 001.5-1 1.6 1.6 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.6 1.6 0 001.8.3H9a1.6 1.6 0 001-1.5V3a2 2 0 014 0v.1a1.6 1.6 0 001 1.5 1.6 1.6 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.6 1.6 0 00-.3 1.8V9a1.6 1.6 0 001.5 1H21a2 2 0 010 4h-.1a1.6 1.6 0 00-1.5 1z" {...p}/></>,
+    sun: <><circle cx="12" cy="12" r="4" {...p}/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4" {...p}/></>,
+    cloud: <><path d="M7 18h10a4 4 0 100-8 6 6 0 00-11.7 1.5A3.5 3.5 0 007 18z" {...p}/></>,
+    snow: <><path d="M12 3v18M3 12h18M5 5l14 14M19 5L5 19" {...p}/></>,
+    subway: <><rect x="5" y="3" width="14" height="15" rx="3" {...p}/><path d="M5 12h14" {...p}/><circle cx="9" cy="15" r=".9" fill={color} stroke="none"/><circle cx="15" cy="15" r=".9" fill={color} stroke="none"/><path d="M8 18l-2 3M16 18l2 3" {...p}/></>,
+    fork: <><path d="M7 3v8a2 2 0 002 2v8M5 3v5M9 3v5M15 3c-1 2-1 5 0 7 1 0 2-1 2-3V3M15 13v8" {...p}/></>,
+    bag: <><path d="M5 8h14l-1 12H6L5 8z" {...p}/><path d="M9 8V6a3 3 0 016 0v2" {...p}/></>,
+    ticket: <><path d="M3 9a2 2 0 012-2h14a2 2 0 012 2v1a2 2 0 000 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2v-1a2 2 0 000-4V9z" {...p}/><path d="M10 8v8" strokeDasharray="2 2" {...p}/></>,
+    coffee: <><path d="M4 9h12v6a4 4 0 01-4 4H8a4 4 0 01-4-4V9z" {...p}/><path d="M16 11h2a2.5 2.5 0 010 5h-2M8 3v3M12 3v3" {...p}/></>,
+    cart: <><circle cx="9" cy="20" r="1.4" {...p}/><circle cx="17" cy="20" r="1.4" {...p}/><path d="M3 4h2l2.5 11h11l2-7H7" {...p}/></>,
+    copy: <><rect x="8" y="8" width="12" height="12" rx="2" {...p}/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2" {...p}/></>,
+    phone: <><path d="M4.5 5a2 2 0 012-2h2l2 4-2 1.5a11 11 0 005 5L14 11.5l4 2v2a2 2 0 01-2 2h-1A12 12 0 014.5 6V5z" {...p}/></>,
+    key: <><circle cx="8" cy="14" r="3.5" {...p}/><path d="M11 13l9-9M16 8l2 2M18 6l2 2" {...p}/></>,
+    bell: <><path d="M6 16V11a6 6 0 1112 0v5l2 2H4l2-2z" {...p}/><path d="M10 20a2 2 0 004 0" {...p}/></>,
+    search: <><circle cx="11" cy="11" r="6" {...p}/><path d="M16 16l4 4" {...p}/></>,
+    filter: <><path d="M3 5h18l-7 9v6l-4-2v-4L3 5z" {...p}/></>,
+    check: <><path d="M5 12l5 5L20 6" {...p}/></>,
+    arrowR: <><path d="M5 12h14M13 6l6 6-6 6" {...p}/></>,
+    note: <><path d="M5 5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2H7a2 2 0 01-2-2V5z" {...p}/><path d="M14 3v5h5M8 12h8M8 16h5" {...p}/></>,
+    close: <><path d="M6 6l12 12M6 18L18 6" {...p}/></>,
+    trash: <><path d="M4 7h16M10 11v6M14 11v6M5 7l1 12h12l1-12M9 7V4h6v3" {...p}/></>,
+    edit: <><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" {...p}/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" {...p}/></>,
+  };
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" style={{ display: 'block', flexShrink: 0 }}>
+      {paths[name] || null}
+    </svg>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────
+// MOCK DATA
+// ─────────────────────────────────────────────────────────────
+const ALL7 = ['yixuan','annie','yating','yiru','chenyu','hongsheng','guanjie'];
+
+const MEMBERS = [
+  { id: 'yixuan',    name: '苡璇', color: '#3F7B8A', short: '璇', budgetTWD: 60000 },
+  { id: 'annie',     name: '安妮', color: '#C97A82', short: '妮', budgetTWD: 60000 },
+  { id: 'yating',    name: '雅婷', color: '#9B7AB8', short: '婷', budgetTWD: 60000 },
+  { id: 'yiru',      name: '苡如', color: '#5A8F6E', short: '如', budgetTWD: 60000 },
+  { id: 'chenyu',    name: '承毓', color: '#D49152', short: '毓', budgetTWD: 60000 },
+  { id: 'hongsheng', name: '弘昇', color: '#7A9BC9', short: '昇', budgetTWD: 60000 },
+  { id: 'guanjie',   name: '冠杰', color: '#8A6E4E', short: '杰', budgetTWD: 60000 },
+];
+
+// Compute which trip day corresponds to today's date
+function computeTodayIndex() {
+  const tripDates = ['2026/12/29', '2026/12/30', '2026/12/31', '2027/01/01', '2027/01/02'];
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm   = String(now.getMonth() + 1).padStart(2, '0');
+  const dd   = String(now.getDate()).padStart(2, '0');
+  const today = `${yyyy}/${mm}/${dd}`;
+  const idx = tripDates.indexOf(today);
+  if (idx >= 0) return idx;
+  // Before trip → Day 1; after trip → Day 5
+  return now < new Date('2026-12-29') ? 0 : 4;
+}
+
+const TRIP = {
+  name: '2026 韓國跨年旅行',
+  start: '2026/12/29',
+  end:   '2027/01/02',
+  city:  '首爾',
+  days:  5,
+  todayIndex: computeTodayIndex(),
+  rate: { TWD_KRW: 40 },
+  budget: { totalTWD: 420000 },
+};
+
+const CATS = [
+  { id: 'food',   label: '餐飲', icon: 'fork',   color: '#E89358', bg: '#FBE6D4' },
+  { id: 'tx',     label: '交通', icon: 'subway', color: '#3F7B8A', bg: '#E1EBEE' },
+  { id: 'stay',   label: '住宿', icon: 'bed',    color: '#9B7AB8', bg: '#EADFF1' },
+  { id: 'shop',   label: '購物', icon: 'bag',    color: '#C97A82', bg: '#F3DCDF' },
+  { id: 'ticket', label: '門票', icon: 'ticket', color: '#5A8F6E', bg: '#DDE9D9' },
+  { id: 'other',  label: '其他', icon: 'note',   color: '#8A857A', bg: '#ECE5D5' },
+];
+
+const DAYS = [
+  {
+    idx: 0, date: '12/29', dow: '週一', label: 'Day 1', title: '出發 · 桃園機場',
+    weather: { icon: 'sun', t: '18°C / 24°C', desc: '晴' },
+    items: [
+      { id:'d0-1', time:'08:00', dur:'60 min',  type:'tx',     title:'集合 桃園機場 T2',     addr:'桃園國際機場第二航廈',   note:'航班 BR 160',            participants: ALL7 },
+      { id:'d0-2', time:'10:05', dur:'165 min', type:'tx',     title:'BR 160 起飛',          addr:'桃園 TPE → 仁川 ICN',   note:'預計 13:10 抵達首爾',    participants: ALL7 },
+      { id:'d0-3', time:'13:30', dur:'60 min',  type:'tx',     title:'仁川機場 T1 入境',     addr:'仁川國際機場',           note:'入境 + 領 T-money',       participants: ALL7 },
+      { id:'d0-4', time:'15:00', dur:'70 min',  type:'tx',     title:'機場快線 AREX',        addr:'機場 → 首爾站',          note:'直達車 9000 KRW',         participants: ALL7 },
+      { id:'d0-5', time:'16:30', dur:'30 min',  type:'stay',   title:'入住 L7 Myeongdong',   addr:'首爾中區明洞 8 街 137',  note:'確認房間分配',             participants: ALL7 },
+      { id:'d0-6', time:'18:30', dur:'90 min',  type:'food',   title:'孔陵一隻雞 明洞店',     addr:'明洞 4 街 12',           note:'點 2 隻 + 海鮮煎餅',      participants: ALL7 },
+      { id:'d0-7', time:'20:30', dur:'90 min',  type:'shop',   title:'明洞商圈逛街',          addr:'明洞主街',               note:'樂天免稅 / Olive Young',  participants: ALL7 },
+    ],
+  },
+  {
+    idx: 1, date: '12/30', dow: '週二', label: 'Day 2', title: '抵達 · 明洞',
+    weather: { icon: 'cloud', t: '-2°C / 4°C', desc: '多雲' },
+    items: [
+      { id:'d1-1', time:'09:00', dur:'60 min',  type:'food',   title:'Isaac Toast 早餐',     addr:'明洞分店',               note:'人氣火腿起司吐司',         participants: ALL7 },
+      { id:'d1-2', time:'11:00', dur:'120 min', type:'shop',   title:'明洞商圈採購',          addr:'明洞主街',               note:'Olive Young / 樂天免稅',   participants: ALL7 },
+      { id:'d1-3', time:'13:30', dur:'90 min',  type:'food',   title:'午餐 明洞餃子',         addr:'明洞 10 街 10',           note:'刀削麵 + 餃子',            participants: ALL7 },
+      { id:'d1-4', time:'15:30', dur:'90 min',  type:'ticket', title:'景福宮參觀',            addr:'鍾路區社稷路 161',        note:'穿韓服免門票',             participants: ALL7 },
+      { id:'d1-5', time:'19:00', dur:'90 min',  type:'food',   title:'晚餐 燒肉',             addr:'明洞燒肉街',              note:'多點幾份',                 participants: ALL7 },
+    ],
+  },
+  {
+    idx: 2, date: '12/31', dow: '週三', label: 'Day 3', title: '古宮 · 弘大跨年',
+    weather: { icon: 'snow', t: '-5°C / 1°C', desc: '小雪' },
+    items: [
+      { id:'d2-1', time:'09:00', dur:'45 min',  type:'food',   title:'Isaac Toast 早餐',     addr:'明洞分店',           note:'人氣火腿起司吐司', participants: ALL7 },
+      { id:'d2-2', time:'10:30', dur:'150 min', type:'ticket', title:'景福宮 + 韓服體驗',     addr:'鍾路區社稷路 161',   note:'穿韓服免門票',     participants: ['yixuan','annie','yating','chenyu','guanjie'] },
+      { id:'d2-3', time:'10:30', dur:'120 min', type:'shop',   title:'東大門逛街',            addr:'東大門設計廣場',     note:'苡如弘昇自由行',   participants: ['yiru','hongsheng'] },
+      { id:'d2-4', time:'13:00', dur:'90 min',  type:'ticket', title:'北村韓屋村散步',        addr:'鍾路區桂洞路',       note:'小聲，居民住宅',   participants: ['yixuan','annie','yating','chenyu','guanjie'] },
+      { id:'d2-5', time:'14:30', dur:'90 min',  type:'food',   title:'三清洞咖啡 Onion',      addr:'三清洞 28-1',        note:'下午茶 + 拍照',    participants: ['yixuan','annie','yating','chenyu','guanjie'] },
+      { id:'d2-6', time:'17:00', dur:'60 min',  type:'stay',   title:'回飯店休息',            addr:'L7 Myeongdong',      note:'換衣服暖身',       participants: ALL7 },
+      { id:'d2-7', time:'19:00', dur:'90 min',  type:'food',   title:'劉家辣炒年糕 弘大店',   addr:'麻浦區弘益路 6 街',  note:'弘昇強烈推薦',     participants: ALL7 },
+      { id:'d2-8', time:'22:30', dur:'120 min', type:'ticket', title:'弘大跨年街頭活動',      addr:'弘大商圈',           note:'多注意安全 ⚠',    participants: ALL7 },
+    ],
+  },
+  {
+    idx: 3, date: '01/01', dow: '週四', label: 'Day 4', title: '南山塔 · 購物',
+    weather: { icon: 'sun', t: '-3°C / 3°C', desc: '晴' },
+    items: [
+      { id:'d3-1', time:'09:30', dur:'45 min',  type:'food',   title:'明洞餃子',             addr:'明洞 10 街 10',       note:'刀削麵 + 餃子',    participants: ALL7 },
+      { id:'d3-2', time:'11:00', dur:'180 min', type:'ticket', title:'南山塔 N Seoul Tower', addr:'龍山區南山公園路 105', note:'纜車上山 + 觀景台', participants: ALL7 },
+      { id:'d3-3', time:'14:00', dur:'120 min', type:'shop',   title:'南大門市場',           addr:'中區南大門市場 4 街',  note:'紀念品 / 海苔',    participants: ['yixuan','annie','yating','yiru','guanjie'] },
+      { id:'d3-4', time:'14:00', dur:'120 min', type:'shop',   title:'樂天百貨 本店',         addr:'中區乙支路 30',        note:'承毓弘昇自由活動',  participants: ['chenyu','hongsheng'] },
+      { id:'d3-5', time:'17:00', dur:'90 min',  type:'shop',   title:'ALAND 購物',           addr:'明洞 ALAND',          note:'逛逛逛',            participants: ['yixuan','annie','yating'] },
+      { id:'d3-6', time:'19:30', dur:'90 min',  type:'food',   title:'馬鈴薯排骨湯',          addr:'中區明洞 9 街',        note:'最後一晚大餐',      participants: ALL7 },
+    ],
+  },
+  {
+    idx: 4, date: '01/02', dow: '週五', label: 'Day 5', title: '回程',
+    weather: { icon: 'cloud', t: '-1°C / 5°C', desc: '陰' },
+    items: [
+      { id:'d4-1', time:'09:00', dur:'30 min',  type:'stay', title:'退房 L7 Myeongdong', addr:'明洞 8 街 137',      note:'寄放行李到 11:00', participants: ALL7 },
+      { id:'d4-2', time:'10:00', dur:'80 min',  type:'tx',   title:'搭乘 6015 機場巴士',  addr:'明洞站旁站牌',        note:'18,000 KRW / 人',  participants: ALL7 },
+      { id:'d4-3', time:'13:30', dur:'150 min', type:'tx',   title:'仁川機場辦理登機',    addr:'仁川機場 T1',         note:'退稅 + 用完韓元',  participants: ALL7 },
+      { id:'d4-4', time:'16:00', dur:'170 min', type:'tx',   title:'BR 161 起飛回桃園',   addr:'仁川 ICN → 桃園 TPE', note:'19:50 落地台北',   participants: ALL7 },
+    ],
+  },
+];
+
+const STAYS = [
+  {
+    id:'st1', name:'L7 Myeongdong by Lotte', tag:'含早餐 · 3 晚',
+    nights: 3, checkIn: '12/30 (二) 15:00', checkOut: '01/02 (五) 11:00',
+    addr: '서울 중구 명동 8길 137 (L7 明洞)',
+    addrShort: '首爾中區明洞 8 街 137',
+    phone: '+82-2-6310-1000',
+    code: '訂房代碼 KR2026 · 早餐券每人 1 張 / 日',
+    notes: '飯店一樓有 7-11，地下二樓直通明洞站 8 號出口。',
+    covers: [1,2,3,4],
+  },
+];
+
+// expense entries
+const EXPENSES_INIT = [
+  { id:'e1', day:1, date:'12/30', item:'機場快線 AREX × 7',       cat:'tx',     krw:63000,  payer:'chenyu',    split:['yixuan','annie','yating','yiru','chenyu','hongsheng','guanjie'], note:'直達車 9000/人' },
+  { id:'e2', day:1, date:'12/30', item:'安妮住宿費 (安妮房)',       cat:'stay',   krw:780000, payer:'annie',     split:['annie'],                                                          note:'個人包房 3 晚' },
+  { id:'e3', day:1, date:'12/30', item:'孔陵一隻雞 (兩隻)',         cat:'food',   krw:84000,  payer:'yixuan',    split:['yixuan','annie','yating','yiru','chenyu','hongsheng','guanjie'], note:'+ 海鮮煎餅' },
+  { id:'e4', day:2, date:'12/31', item:'Isaac Toast × 7',          cat:'food',   krw:35000,  payer:'guanjie',   split:['yixuan','annie','yating','yiru','chenyu','hongsheng','guanjie'], note:'帶上路吃' },
+  { id:'e5', day:2, date:'12/31', item:'景福宮韓服租借 × 5',        cat:'ticket', krw:75000,  payer:'yating',    split:['yixuan','annie','yating','chenyu','guanjie'],                     note:'2 小時方案' },
+  { id:'e6', day:2, date:'12/31', item:'Olive Young 面膜',          cat:'shop',   krw:54000,  payer:'chenyu',    split:['yating','chenyu'],                                                note:'兩人合購' },
+  { id:'e7', day:2, date:'12/31', item:'三清洞 Onion 咖啡',         cat:'food',   krw:42000,  payer:'hongsheng', split:['yixuan','annie','yating','yiru','chenyu','hongsheng','guanjie'], note:'下午茶' },
+  { id:'e8', day:2, date:'12/31', item:'劉家辣炒年糕',               cat:'food',   krw:49000,  payer:'yiru',      split:['yixuan','annie','yiru','hongsheng'],                              note:'弘昇想吃' },
+];
+
+// ═══ components.jsx ═══
+// components.jsx — shared app components
+
+const { useState, useMemo, useEffect, useRef } = React;
+
+// ─────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────
+const fmtKRW  = (n) => '₩ ' + n.toLocaleString('en-US');
+const fmtTWD  = (n) => 'NT$ ' + Math.round(n).toLocaleString('en-US');
+const krwToTwd = (k) => k / TRIP.rate.TWD_KRW;
+const findCat = (id) => CATS.find(c => c.id === id) || CATS[5];
+const findMember = (id) => MEMBERS.find(m => m.id === id) || MEMBERS[0];
+
+// ─────────────────────────────────────────────────────────────
+// AppShell — scrollable area, fills the app container
+// ─────────────────────────────────────────────────────────────
+function AppShell({ children, bg = T.bg, padTop = 'calc(env(safe-area-inset-top, 0px) + 96px)', padBot = 110, scrollRef }) {
+  return (
+    <div
+      ref={scrollRef}
+      style={{
+        position: 'absolute', inset: 0, overflow: 'auto',
+        background: bg, paddingTop: padTop, paddingBottom: padBot,
+        fontFamily: T.font, color: T.ink,
+        WebkitOverflowScrolling: 'touch',
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// TopBar — translucent header, respects device safe area
+// ─────────────────────────────────────────────────────────────
+function TopBar({ title, sub, action, dark = false, transparent = false }) {
+  return (
+    <div style={{
+      position: 'absolute', top: 0, left: 0, right: 0, zIndex: 8,
+      paddingTop: 'calc(env(safe-area-inset-top, 0px) + 20px)', paddingBottom: 8,
+      background: transparent ? 'transparent'
+        : 'linear-gradient(180deg, rgba(246,241,230,0.96) 60%, rgba(246,241,230,0))',
+      backdropFilter: transparent ? 'none' : 'blur(6px)',
+    }}>
+      <div style={{
+        display:'flex', alignItems:'center', justifyContent:'space-between',
+        padding:'8px 20px 4px',
+      }}>
+        <div style={{ display:'flex', flexDirection:'column', gap: 2 }}>
+          {sub && (
+            <div style={{ fontSize: 12, color: T.ink3, letterSpacing: 1, fontWeight: 500 }}>
+              {sub}
+            </div>
+          )}
+          <div style={{
+            fontSize: 22, fontWeight: 700, color: dark ? '#fff' : T.ink,
+            letterSpacing: -0.2,
+          }}>{title}</div>
+        </div>
+        {action}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// BottomNav — pinned tab bar, respects device safe area
+// ─────────────────────────────────────────────────────────────
+const NAV_ITEMS = [
+  { id: 'home',      label: '首頁', icon: 'home'   },
+  { id: 'today',     label: '今日', icon: 'today'  },
+  { id: 'itinerary', label: '行程', icon: 'route'  },
+  { id: 'expense',   label: '消費', icon: 'wallet' },
+  { id: 'stay',      label: '住宿', icon: 'bed'    },
+];
+
+function BottomNav({ active, onChange }) {
+  return (
+    <div style={{
+      position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 30,
+      padding: '8px 8px calc(env(safe-area-inset-bottom, 0px) + 8px)',
+      background: 'linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.96) 30%)',
+      pointerEvents: 'none',
+    }}>
+      <div style={{
+        margin: '0 auto', maxWidth: 360, pointerEvents: 'auto',
+        background: '#fff', borderRadius: 24,
+        boxShadow: '0 6px 22px rgba(74,60,32,0.10), 0 1px 0 rgba(0,0,0,0.02)',
+        border: '1px solid ' + T.divider,
+        display: 'flex', justifyContent: 'space-around', alignItems: 'center',
+        padding: '8px 6px',
+      }}>
+        {NAV_ITEMS.map(item => {
+          const on = item.id === active;
+          return (
+            <button key={item.id} onClick={() => onChange(item.id)} style={{
+              border: 'none', background: 'transparent', cursor: 'pointer',
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              gap: 2, padding: '6px 10px', borderRadius: 16,
+              color: on ? T.primary : T.ink3, minWidth: 56,
+              transition: 'color .15s',
+            }}>
+              <div style={{
+                background: on ? T.primarySoft : 'transparent',
+                borderRadius: 12, padding: '4px 12px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'background .15s',
+              }}>
+                <Icon name={item.icon} size={22} color={on ? T.primary : T.ink3} strokeWidth={on ? 2 : 1.7}/>
+              </div>
+              <span style={{
+                fontSize: 11, fontWeight: on ? 600 : 500, letterSpacing: 0.2,
+              }}>{item.label}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// FAB — floating action button, respects device safe area
+// ─────────────────────────────────────────────────────────────
+function FAB({ onClick, label = '記一筆' }) {
+  return (
+    <button onClick={onClick} style={{
+      position: 'absolute', right: 18,
+      bottom: 'calc(env(safe-area-inset-bottom, 0px) + 96px)',
+      zIndex: 25,
+      height: 52, padding: '0 20px 0 16px', borderRadius: 26,
+      border: 'none', background: T.primary, color: '#fff',
+      display: 'flex', alignItems: 'center', gap: 8,
+      fontFamily: T.font, fontSize: 15, fontWeight: 600,
+      boxShadow: T.shadowFab, cursor: 'pointer',
+      letterSpacing: 0.4,
+    }}>
+      <Icon name="plus" size={20} color="#fff" strokeWidth={2.2}/>
+      {label}
+    </button>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Card
+// ─────────────────────────────────────────────────────────────
+function Card({ children, style = {}, onClick, pad = 16 }) {
+  return (
+    <div onClick={onClick} style={{
+      background: T.card, borderRadius: 20, padding: pad,
+      boxShadow: T.shadowCard, border: '1px solid rgba(236,229,213,0.6)',
+      cursor: onClick ? 'pointer' : 'default',
+      ...style,
+    }}>{children}</div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Section header (small grey label + optional right action)
+// ─────────────────────────────────────────────────────────────
+function SectionHeader({ title, action, style = {} }) {
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      padding: '16px 20px 8px', ...style,
+    }}>
+      <div style={{
+        fontSize: 13, color: T.ink3, fontWeight: 600, letterSpacing: 0.6,
+      }}>{title}</div>
+      {action}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Member avatar (initial in colored circle)
+// ─────────────────────────────────────────────────────────────
+function Avatar({ member, size = 28, ring = false }) {
+  const m = typeof member === 'string' ? findMember(member) : member;
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: '50%',
+      background: m.color, color: '#fff',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontSize: size * 0.45, fontWeight: 600, flexShrink: 0,
+      boxShadow: ring ? '0 0 0 2px #fff, 0 0 0 3.5px ' + m.color : 'none',
+      letterSpacing: 0,
+    }}>{m.short}</div>
+  );
+}
+
+function AvatarStack({ ids, size = 24, max = 5 }) {
+  const list = ids.slice(0, max);
+  return (
+    <div style={{ display: 'flex' }}>
+      {list.map((id, i) => (
+        <div key={id} style={{ marginLeft: i === 0 ? 0 : -8 }}>
+          <Avatar member={id} size={size} ring/>
+        </div>
+      ))}
+      {ids.length > max && (
+        <div style={{
+          marginLeft: -8,
+          width: size, height: size, borderRadius: '50%',
+          background: '#fff', color: T.ink3,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 11, fontWeight: 600,
+          boxShadow: '0 0 0 2px #fff, 0 0 0 3.5px ' + T.divider,
+        }}>+{ids.length - max}</div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Pill (small tag/chip)
+// ─────────────────────────────────────────────────────────────
+function Pill({ children, color = T.ink2, bg = T.surfaceTint, icon, size = 'm', style = {} }) {
+  const fz = size === 's' ? 11 : 12;
+  const py = size === 's' ? 3 : 5;
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: 4,
+      padding: `${py}px 10px`, borderRadius: 999,
+      background: bg, color, fontSize: fz, fontWeight: 600,
+      lineHeight: 1, whiteSpace: 'nowrap', ...style,
+    }}>
+      {icon && <Icon name={icon} size={fz + 2} color={color} strokeWidth={2}/>}
+      {children}
+    </span>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Category icon tile (rounded square with cat icon)
+// ─────────────────────────────────────────────────────────────
+function CatTile({ catId, size = 38, radius = 12 }) {
+  const c = findCat(catId);
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: radius,
+      background: c.bg, color: c.color,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      flexShrink: 0,
+    }}>
+      <Icon name={c.icon} size={size * 0.55} color={c.color} strokeWidth={1.9}/>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Money — large number with currency
+// ─────────────────────────────────────────────────────────────
+function Money({ krw, twd, currency = 'TWD', size = 'm', muted = false }) {
+  const sz = { s: 14, m: 18, l: 24, xl: 32 }[size];
+  const value = currency === 'TWD'
+    ? (twd != null ? twd : krwToTwd(krw))
+    : (krw != null ? krw : twd * TRIP.rate.TWD_KRW);
+  const text = currency === 'TWD' ? fmtTWD(value) : fmtKRW(value);
+  return (
+    <span style={{
+      fontSize: sz, fontWeight: 700, color: muted ? T.ink2 : T.ink,
+      letterSpacing: -0.5, fontVariantNumeric: 'tabular-nums',
+    }}>
+      {text}
+    </span>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Button
+// ─────────────────────────────────────────────────────────────
+function Btn({ children, onClick, variant = 'primary', icon, size = 'm', style = {}, full }) {
+  const variants = {
+    primary:  { bg: T.primary, color: '#fff', border: 'none' },
+    soft:     { bg: T.primarySoft, color: T.primary, border: 'none' },
+    ghost:    { bg: 'transparent', color: T.primary, border: '1.5px solid ' + T.primary },
+    neutral:  { bg: '#F5F0E4', color: T.ink, border: 'none' },
+    warm:     { bg: T.orange, color: '#fff', border: 'none' },
+  };
+  const v = variants[variant];
+  const sizes = { s:{h:32,fz:13,px:14}, m:{h:40,fz:14,px:18}, l:{h:50,fz:16,px:22} }[size];
+  return (
+    <button onClick={onClick} style={{
+      height: sizes.h, padding: `0 ${sizes.px}px`,
+      borderRadius: sizes.h / 2, border: v.border, background: v.bg, color: v.color,
+      fontFamily: T.font, fontSize: sizes.fz, fontWeight: 600, letterSpacing: 0.2,
+      cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6,
+      width: full ? '100%' : undefined, justifyContent: 'center',
+      whiteSpace: 'nowrap', flexShrink: 0,
+      ...style,
+    }}>
+      {icon && <Icon name={icon} size={sizes.fz + 4} color={v.color} strokeWidth={2}/>}
+      {children}
+    </button>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Day tabs (used by Itinerary)
+// ─────────────────────────────────────────────────────────────
+function DayTabs({ active, onChange }) {
+  return (
+    <div style={{
+      display:'flex', gap:8, padding:'0 0 12px 16px', overflowX:'auto',
+      scrollbarWidth:'none',
+    }}>
+      {DAYS.map(d => {
+        const on = d.idx === active;
+        return (
+          <button key={d.idx} onClick={() => onChange(d.idx)} style={{
+            flexShrink: 0, border:'none', cursor:'pointer',
+            background: on ? T.primary : '#fff',
+            color: on ? '#fff' : T.ink2,
+            padding: '10px 14px', borderRadius: 16,
+            boxShadow: on ? 'none' : T.shadowSoft,
+            border: on ? 'none' : '1px solid ' + T.divider,
+            display:'flex', flexDirection:'column', alignItems:'center', gap:2,
+            minWidth: 64,
+          }}>
+            <span style={{
+              fontSize: 11, fontWeight: 600, opacity: on ? 0.85 : 0.6,
+              letterSpacing: 0.5,
+            }}>{d.label}</span>
+            <span style={{
+              fontSize: 15, fontWeight: 700, fontFamily: T.font,
+              letterSpacing: -0.2,
+            }}>{d.date}</span>
+          </button>
+        );
+      })}
+      <div style={{ width: 20, flexShrink: 0 }}/>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Weather chip
+// ─────────────────────────────────────────────────────────────
+function WeatherChip({ icon, t, desc }) {
+  return (
+    <div style={{
+      display:'inline-flex', alignItems:'center', gap:8,
+      padding:'6px 12px 6px 10px', borderRadius: 999,
+      background: 'rgba(255,255,255,0.7)', border:'1px solid ' + T.divider,
+    }}>
+      <Icon name={icon} size={18} color={T.primary}/>
+      <span style={{ fontSize: 13, fontWeight: 600, color: T.ink }}>{t}</span>
+      <span style={{ fontSize: 12, color: T.ink3 }}>{desc}</span>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Expose
+// ─────────────────────────────────────────────────────────────
+
+// ═══ screen-home.jsx ═══
+// screen-home.jsx — Dashboard 首頁 + Today 今日行程
+
+// ─────────────────────────────────────────────────────────────
+// Dashboard (首頁)
+// ─────────────────────────────────────────────────────────────
+function ScreenDashboard({ expenses, memberBudgets = {}, onNav, onAddExpense, todayItems = [] }) {
+  const todayDay = DAYS[TRIP.todayIndex];
+  const nextItem = todayItems[0] || null;   // first item of today = "next up"
+  const stay = STAYS[0];
+
+  // spend totals — same logic as Expense 頁「全部」視角
+  const totalKRW  = expenses.reduce((s, e) => s + e.krw, 0);
+  const totalTWD  = krwToTwd(totalKRW);
+  const budgetTWD = MEMBERS.reduce((s, m) => s + ((memberBudgets[m.id]) || 50000), 0);
+  const pct = budgetTWD > 0 ? Math.min(100, (totalTWD / budgetTWD) * 100) : 0;
+  const remainingTWD = budgetTWD - totalTWD;
+
+  return (
+    <>
+      {/* HERO — trip status */}
+      <div style={{
+        margin: '8px 16px 16px', borderRadius: 28, padding: '22px 22px 20px',
+        background: `linear-gradient(140deg, ${T.primary} 0%, ${T.primaryDark} 100%)`,
+        color: '#fff', position: 'relative', overflow: 'hidden',
+        boxShadow: '0 10px 30px rgba(63,123,138,0.25)',
+      }}>
+        {/* decorative circles */}
+        <div style={{
+          position:'absolute', top:-40, right:-40, width:160, height:160,
+          borderRadius:'50%', background:'rgba(255,255,255,0.06)',
+        }}/>
+        <div style={{
+          position:'absolute', bottom:-50, right:30, width:120, height:120,
+          borderRadius:'50%', background:'rgba(255,255,255,0.04)',
+        }}/>
+
+        <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom: 10 }}>
+          <span style={{
+            display:'inline-flex', alignItems:'center', gap:6,
+            padding:'4px 10px', background:'rgba(255,255,255,0.18)',
+            borderRadius:999, fontSize: 11, fontWeight:600, letterSpacing: 0.5,
+          }}>
+            <span style={{
+              width:6, height:6, borderRadius:'50%', background:'#7DDB9A',
+              boxShadow:'0 0 0 3px rgba(125,219,154,0.3)',
+            }}/>
+            旅行中 · Day {todayDay.idx + 1} / {TRIP.days}
+          </span>
+        </div>
+        <div style={{ fontSize: 22, fontWeight: 700, lineHeight: 1.25, letterSpacing: -0.2 }}>
+          {TRIP.name}
+        </div>
+        <div style={{ fontSize: 13, opacity: 0.78, marginTop: 6, letterSpacing: 0.3 }}>
+          {TRIP.start} – {TRIP.end} · 首爾 {MEMBERS.length} 人同行
+        </div>
+
+        {/* member dots */}
+        <div style={{
+          display:'flex', alignItems:'center', justifyContent:'space-between',
+          marginTop: 18, paddingTop: 14,
+          borderTop:'1px solid rgba(255,255,255,0.15)',
+        }}>
+          <AvatarStack ids={MEMBERS.map(m=>m.id)} size={28} max={5}/>
+          <div style={{ display:'flex', alignItems:'center', gap:4, fontSize: 12, opacity:0.85 }}>
+            <Icon name="pin" size={14} color="#fff"/>
+            <span>明洞 L7 飯店</span>
+          </div>
+        </div>
+      </div>
+
+      {/* TODAY summary */}
+      <SectionHeader title="今日行程" action={
+        <button onClick={()=>onNav('today')} style={{
+          border:'none', background:'transparent', cursor:'pointer',
+          color: T.primary, fontWeight:600, fontSize:12,
+          display:'inline-flex', alignItems:'center', gap:2,
+        }}>查看全部 <Icon name="chevR" size={14}/></button>
+      }/>
+      <div style={{ padding: '0 16px' }}>
+        <Card pad={0}>
+          {/* "Next up" pinned row — only when items exist */}
+          {nextItem && (
+            <div style={{
+              padding: '14px 16px', borderBottom: '1px solid ' + T.divider,
+              display:'flex', alignItems:'center', gap: 12,
+              background: T.yellowSoft + '88',
+              borderTopLeftRadius: 20, borderTopRightRadius: 20,
+            }}>
+              <div style={{
+                width: 44, textAlign:'center',
+                padding: '6px 0', borderRadius: 10,
+                background: '#fff', border: '1px solid ' + T.divider,
+              }}>
+                <div style={{ fontSize: 10, color: T.ink3, fontWeight:600, letterSpacing:0.5 }}>下一站</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: T.ink, letterSpacing: -0.3 }}>
+                  {nextItem.time}
+                </div>
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{
+                  fontSize: 15, fontWeight: 600, color: T.ink,
+                  overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap',
+                }}>{nextItem.title}</div>
+                <div style={{ fontSize: 12, color: T.ink3, marginTop: 2 }}>
+                  {nextItem.addr || nextItem.note || ''}
+                </div>
+              </div>
+              <button style={{
+                border:'none', background: T.primary, color:'#fff',
+                width: 38, height: 38, borderRadius: 12, cursor:'pointer',
+                display:'flex', alignItems:'center', justifyContent:'center',
+              }}>
+                <Icon name="map" size={18} color="#fff" strokeWidth={2}/>
+              </button>
+            </div>
+          )}
+
+          {/* mini timeline — up to 4 items from shared state */}
+          {todayItems.length > 0 ? (
+            <div style={{ padding: '10px 16px 14px' }}>
+              {todayItems.slice(0, 4).map((it) => (
+                <div key={it.id} style={{
+                  display:'flex', alignItems:'center', gap:12, padding:'6px 0',
+                }}>
+                  <div style={{
+                    fontSize: 12, color: T.ink3, fontWeight:600, width: 42,
+                    fontVariantNumeric:'tabular-nums',
+                  }}>{it.time}</div>
+                  <CatTile catId={it.type} size={26} radius={8}/>
+                  <div style={{ flex:1, fontSize: 13.5, color: T.ink2, fontWeight:500,
+                    overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                    {it.title}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ padding: '28px 16px', textAlign:'center', fontSize: 13, color: T.ink3 }}>
+              今天尚未安排行程
+            </div>
+          )}
+        </Card>
+      </div>
+
+      {/* TONIGHT'S STAY + SPEND row */}
+      <div style={{ padding: '16px 16px 0', display:'grid', gap: 12, gridTemplateColumns:'1fr 1fr' }}>
+        {/* tonight stay */}
+        <Card pad={14} onClick={() => onNav('stay')} style={{ display:'flex', flexDirection:'column', gap: 8 }}>
+          <div style={{
+            display:'inline-flex', alignSelf:'flex-start', alignItems:'center', gap:4,
+            padding: '3px 8px', borderRadius: 999,
+            background: T.greenSoft, color: '#4D7058', fontSize: 10, fontWeight: 700, letterSpacing: 0.5,
+          }}>
+            <span style={{ width:5, height:5, borderRadius:'50%', background:'#5A8F6E' }}/>
+            今晚住這裡
+          </div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: T.ink, letterSpacing:-0.2,
+            display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden',
+          }}>{stay.name}</div>
+          <div style={{ fontSize: 11, color: T.ink3, marginTop: 'auto' }}>
+            {stay.tag}
+          </div>
+        </Card>
+
+        {/* spend */}
+        <Card pad={14} onClick={() => onNav('expense')} style={{ display:'flex', flexDirection:'column', gap: 6 }}>
+          <div style={{ fontSize: 11, color: T.ink3, fontWeight:600, letterSpacing:0.5 }}>
+            旅程總花費
+          </div>
+          <div style={{ display:'flex', alignItems:'baseline', gap: 4 }}>
+            <Money twd={totalTWD} size="l"/>
+          </div>
+        </Card>
+      </div>
+
+      {/* recent expenses */}
+      <SectionHeader title="最近消費" action={
+        <button onClick={()=>onNav('expense')} style={{
+          border:'none', background:'transparent', cursor:'pointer',
+          color: T.primary, fontWeight:600, fontSize:12,
+          display:'inline-flex', alignItems:'center', gap:2,
+        }}>全部 <Icon name="chevR" size={14}/></button>
+      }/>
+      <div style={{ padding: '0 16px' }}>
+        <Card pad={6}>
+          {expenses.slice(-3).reverse().map((e, i, arr) => {
+            const c = findCat(e.cat);
+            const p = findMember(e.payer);
+            return (
+              <div key={e.id} style={{
+                display:'flex', alignItems:'center', gap:12, padding: '12px 10px',
+                borderBottom: i < arr.length - 1 ? '1px solid ' + T.divider : 'none',
+              }}>
+                <CatTile catId={e.cat} size={36}/>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: T.ink,
+                    overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                    {e.item}
+                  </div>
+                  <div style={{ fontSize: 11, color: T.ink3, marginTop: 2, display:'flex', gap:6, alignItems:'center' }}>
+                    <span>{e.date}</span>
+                    <span style={{ width:3, height:3, borderRadius:'50%', background: T.ink4 }}/>
+                    <span>{p.name}付款</span>
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <Money krw={e.krw} currency="KRW" size="s"/>
+                  <div style={{ fontSize: 10, color: T.ink3, marginTop: 2 }}>
+                    ≈ {fmtTWD(krwToTwd(e.krw))}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </Card>
+      </div>
+
+      <div style={{ height: 24 }}/>
+    </>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Today (今日行程) — 唯讀瀏覽，資料來自共用 allItinItems
+// ─────────────────────────────────────────────────────────────
+function ScreenToday({ expenses, todayItems }) {
+  const day  = DAYS[TRIP.todayIndex];
+  const stay = STAYS[0];
+  const items = todayItems || [];
+
+  const todayExp = expenses.filter(e => e.day === TRIP.todayIndex);
+  const todayKRW = todayExp.reduce((s, e) => s + e.krw, 0);
+
+  const nextItem = items[0]; // 第一筆作為 NEXT UP
+
+  return (
+    <>
+      {/* date hero */}
+      <div style={{
+        padding: '6px 20px 14px',
+        background: 'linear-gradient(180deg, rgba(241,234,217,0.5) 0%, rgba(246,241,230,0) 100%)',
+      }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end' }}>
+          <div>
+            <div style={{ fontSize: 12, color: T.ink3, letterSpacing: 0.5, fontWeight: 600 }}>
+              DAY {day.idx + 1} / {TRIP.days}
+            </div>
+            <div style={{ fontSize: 28, fontWeight: 700, color: T.ink, letterSpacing: -0.5, marginTop: 2 }}>
+              {day.date} <span style={{ fontSize: 16, color: T.ink3, fontWeight: 600 }}>{day.dow}</span>
+            </div>
+            <div style={{ fontSize: 14, color: T.ink2, marginTop: 4 }}>
+              {day.title}
+            </div>
+          </div>
+          <WeatherChip {...day.weather}/>
+        </div>
+      </div>
+
+      {/* NEXT UP — 只在有行程時顯示 */}
+      {nextItem && (
+        <div style={{ padding: '0 16px 14px' }}>
+          <div style={{
+            borderRadius: 22, padding: 18,
+            background: `linear-gradient(135deg, ${T.yellow}33 0%, ${T.orange}22 100%)`,
+            border: '1.5px solid ' + T.yellow + '55',
+            position:'relative', overflow:'hidden',
+          }}>
+            <div style={{ display:'flex', alignItems:'center', gap: 6, marginBottom: 8 }}>
+              <Icon name="bell" size={14} color={T.orange} strokeWidth={2.2}/>
+              <span style={{ fontSize: 11, fontWeight: 700, color: T.orange, letterSpacing: 1 }}>
+                NEXT UP
+              </span>
+            </div>
+            <div style={{ fontSize: 19, fontWeight: 700, color: T.ink, lineHeight: 1.3, letterSpacing: -0.3 }}>
+              {nextItem.title}
+            </div>
+            <div style={{ display:'flex', alignItems:'center', gap: 10, marginTop: 10, color: T.ink2, fontSize: 13 }}>
+              <Icon name="clock" size={14} color={T.ink2}/>
+              <span>{nextItem.time}{nextItem.dur ? ' · 停留 ' + nextItem.dur : ''}</span>
+            </div>
+            {nextItem.addr && (
+              <div style={{ display:'flex', alignItems:'center', gap: 10, marginTop: 6, color: T.ink2, fontSize: 13 }}>
+                <Icon name="pin" size={14} color={T.ink2}/>
+                <span style={{ overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                  {nextItem.addr}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 時間軸 — 有行程顯示列表，無行程顯示空狀態 */}
+      <SectionHeader title="今日時間軸"/>
+      <div style={{ padding: '0 16px' }}>
+        {items.length === 0 ? (
+          <Card pad={40} style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 32, marginBottom: 12 }}>🗓️</div>
+            <div style={{ fontSize: 15, fontWeight: 600, color: T.ink2, marginBottom: 6 }}>
+              今天尚未安排任何行程
+            </div>
+            <div style={{ fontSize: 13, color: T.ink3 }}>
+              請到行程頁新增行程
+            </div>
+          </Card>
+        ) : (
+          <Card pad={0}>
+            <div style={{ padding: '6px 0' }}>
+              {items.map((it, i) => {
+                const cat = findCat(it.type);
+                return (
+                  <div key={it.id} style={{
+                    display:'flex', gap: 12, padding: '12px 16px',
+                    position:'relative',
+                  }}>
+                    {/* 時間 */}
+                    <div style={{ width: 48, textAlign:'right', flexShrink: 0, paddingTop: 4 }}>
+                      <div style={{
+                        fontSize: 13, fontWeight: 700, color: T.ink,
+                        fontVariantNumeric:'tabular-nums', letterSpacing:-0.3,
+                      }}>{it.time}</div>
+                      {it.dur && <div style={{ fontSize: 10, color: T.ink3, marginTop: 2 }}>{it.dur}</div>}
+                    </div>
+                    {/* 時間線圓點 */}
+                    <div style={{ position:'relative', width: 16, flexShrink: 0 }}>
+                      <div style={{
+                        position:'absolute', left: 6, top: 10,
+                        bottom: i === items.length - 1 ? '50%' : -12,
+                        width: 2, background: T.surfaceTint,
+                      }}/>
+                      <div style={{
+                        position:'absolute', left: 0, top: 6,
+                        width: 14, height: 14, borderRadius: '50%',
+                        background: '#fff', border: '2px solid ' + cat.color,
+                      }}/>
+                    </div>
+                    {/* 內容 */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display:'flex', alignItems:'center', gap: 8, marginBottom: 4 }}>
+                        <CatTile catId={it.type} size={22} radius={6}/>
+                        <span style={{
+                          fontSize: 10, color: cat.color, fontWeight: 700,
+                          letterSpacing: 0.4, textTransform: 'uppercase',
+                        }}>{cat.label}</span>
+                      </div>
+                      <div style={{
+                        fontSize: 14.5, fontWeight: 600, color: T.ink, letterSpacing:-0.2,
+                      }}>{it.title}</div>
+                      {it.addr && (
+                        <div style={{ fontSize: 12, color: T.ink3, marginTop: 3, display:'flex', alignItems:'center', gap: 4 }}>
+                          <Icon name="pin" size={11} color={T.ink3}/>
+                          <span>{it.addr}</span>
+                        </div>
+                      )}
+                      {it.participants && it.participants.length > 0 && (
+                        <div style={{ display:'flex', alignItems:'center', gap: 6, marginTop: 6 }}>
+                          <AvatarStack ids={it.participants} size={18} max={7}/>
+                          <span style={{ fontSize: 10, color: T.ink3 }}>
+                            {it.participants.length === MEMBERS.length ? '全員' : it.participants.length + ' 人'}
+                          </span>
+                        </div>
+                      )}
+                      {it.note && (
+                        <div style={{
+                          fontSize: 11.5, color: T.ink2, marginTop: 6,
+                          padding: '6px 10px', background: T.bgSoft, borderRadius: 10,
+                          display:'inline-block', maxWidth:'100%',
+                        }}>
+                          💬 {it.note}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        )}
+      </div>
+
+      {/* 今日重點 */}
+      <SectionHeader title="今日重點"/>
+      <div style={{ padding: '0 16px', display:'grid', gap:12, gridTemplateColumns:'1fr 1fr' }}>
+        <Card pad={14}>
+          <div style={{ fontSize: 11, color: T.ink3, fontWeight: 600, letterSpacing: 0.5 }}>今日交通</div>
+          <div style={{ display:'flex', alignItems:'center', gap:8, marginTop:8 }}>
+            <Icon name="subway" size={20} color={T.primary}/>
+            <span style={{ fontSize: 14, fontWeight: 600, color: T.ink }}>3 號線</span>
+          </div>
+          <div style={{ fontSize: 11, color: T.ink3, marginTop: 4 }}>明洞 → 安國 → 弘大</div>
+        </Card>
+        <Card pad={14}>
+          <div style={{ fontSize: 11, color: T.ink3, fontWeight: 600, letterSpacing: 0.5 }}>今日已花</div>
+          <div style={{ marginTop: 6 }}>
+            <Money krw={todayKRW} currency="KRW" size="m"/>
+          </div>
+          <div style={{ fontSize: 11, color: T.ink3, marginTop: 4 }}>
+            ≈ {fmtTWD(krwToTwd(todayKRW))} · {todayExp.length} 筆
+          </div>
+        </Card>
+      </div>
+
+      {/* 今晚住宿 */}
+      <SectionHeader title="今晚住宿"/>
+      <div style={{ padding: '0 16px' }}>
+        <Card pad={14} style={{ display:'flex', gap:12, alignItems:'center' }}>
+          <div style={{
+            width: 52, height: 52, borderRadius: 14,
+            background: T.greenSoft, color: '#4D7058',
+            display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0,
+          }}>
+            <Icon name="bed" size={26} color="#4D7058" strokeWidth={1.8}/>
+          </div>
+          <div style={{ flex:1, minWidth:0 }}>
+            <div style={{ fontSize: 14.5, fontWeight: 700, color: T.ink, letterSpacing:-0.2,
+              overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap',
+            }}>{stay.name}</div>
+            <div style={{ fontSize: 12, color: T.ink3, marginTop: 3 }}>{stay.addrShort}</div>
+          </div>
+          <button style={{
+            width: 40, height: 40, borderRadius: 12, border:'none',
+            background: T.primarySoft, color: T.primary, cursor:'pointer',
+            display:'flex', alignItems:'center', justifyContent:'center',
+          }}>
+            <Icon name="map" size={20} color={T.primary} strokeWidth={2}/>
+          </button>
+        </Card>
+      </div>
+
+      <div style={{ height: 24 }}/>
+    </>
+  );
+}
+
+// ═══ screen-itinerary.jsx ═══
+// screen-itinerary.jsx — Itinerary 行程總覽 + Stay 住宿資訊
+
+// ─────────────────────────────────────────────────────────────
+// Duration helpers
+// ─────────────────────────────────────────────────────────────
+function parseDurMinutes(dur) {
+  if (!dur) return 60;
+  const n = parseInt(dur, 10);
+  return isNaN(n) ? 60 : Math.max(0, n);
+}
+function formatDurLabel(totalMin) {
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  if (h === 0) return m + ' min';
+  if (m === 0) return h + ' h';
+  return h + ' h ' + m + ' min';
+}
+
+// ─────────────────────────────────────────────────────────────
+// ItineraryForm — 新增 / 編輯行程 overlay
+// ─────────────────────────────────────────────────────────────
+function ItineraryForm({ item, dayIdx, onSave, onDelete, onClose }) {
+  const [selectedDay,   setSelectedDay]   = useState(item?.dayIdx ?? dayIdx);
+  const [showDayPicker, setShowDayPicker] = useState(false);
+  const [time,          setTime]          = useState(item?.time  || '09:00');
+  const [durH,          setDurH]          = useState(() => Math.floor(parseDurMinutes(item?.dur) / 60));
+  const [durM,          setDurM]          = useState(() => parseDurMinutes(item?.dur) % 60);
+  const [type,          setType]          = useState(item?.type  || 'food');
+  const [title,         setTitle]         = useState(item?.title || '');
+  const [addr,          setAddr]          = useState(item?.addr   || '');
+  const [mapUrl,        setMapUrl]        = useState(item?.mapUrl || '');
+  const [note,          setNote]          = useState(item?.note   || '');
+  const [participants,  setParticipants]  = useState(
+    item?.participants || MEMBERS.map(m => m.id)
+  );
+
+  const toggleP = (id) =>
+    setParticipants(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+
+  const canSave = title.trim().length > 0;
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
+  const handleSave = () => {
+    if (!canSave) return;
+    onSave({
+      id:    item?.id || ('i' + Date.now()),
+      dayIdx: selectedDay,
+      time, dur: String(durH * 60 + durM) + ' min', type,
+      title:  title.trim(),
+      addr:   addr.trim(),
+      mapUrl: mapUrl.trim(),
+      note:   note.trim(),
+      participants,
+    });
+  };
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0,
+      width: '100%', height: '100dvh',
+      background: T.bg, zIndex: 9999,
+      overflowY: 'auto', WebkitOverflowScrolling: 'touch',
+      fontFamily: T.font, color: T.ink,
+    }}>
+      {/* header */}
+      <div style={{
+        position: 'sticky', top: 0, zIndex: 10000,
+        padding: 'calc(env(safe-area-inset-top, 0px) + 20px) 16px 12px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        background: T.bg,
+      }}>
+        <button onClick={onClose} style={{
+          border: '1px solid ' + T.divider, background: '#fff', cursor: 'pointer',
+          width: 38, height: 38, borderRadius: 12, boxShadow: T.shadowSoft,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <Icon name="close" size={20} color={T.ink2}/>
+        </button>
+        <div style={{ fontSize: 17, fontWeight: 700, color: T.ink }}>
+          {item ? '編輯行程' : '新增行程'}
+        </div>
+        <button onClick={handleSave} disabled={!canSave} style={{
+          border: 'none',
+          background: canSave ? T.primary : T.surfaceTint,
+          color:      canSave ? '#fff'    : T.ink4,
+          cursor:     canSave ? 'pointer' : 'default',
+          padding: '8px 16px', borderRadius: 20,
+          fontFamily: T.font, fontSize: 14, fontWeight: 700,
+        }}>儲存</button>
+      </div>
+
+      {/* body */}
+      <div style={{ padding: '4px 16px', paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 120px)', display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+        {/* 基本資訊 */}
+        <Card pad={0}>
+          <FieldRow label="行程名稱" icon="note">
+            <input value={title} onChange={e => setTitle(e.target.value)}
+              placeholder="例：景福宮觀光"
+              style={{ border:'none', outline:'none', background:'transparent',
+                fontFamily: T.font, fontSize: 15, fontWeight: 600, color: T.ink,
+                width: '100%', textAlign: 'right' }}/>
+          </FieldRow>
+          <Divider/>
+          <FieldRow label="地址" icon="pin">
+            <input value={addr} onChange={e => setAddr(e.target.value)}
+              placeholder="地址或景點名稱"
+              style={{ border:'none', outline:'none', background:'transparent',
+                fontFamily: T.font, fontSize: 14, color: T.ink,
+                width: '100%', textAlign: 'right' }}/>
+          </FieldRow>
+          <Divider/>
+          <FieldRow label="地圖連結" icon="map">
+            <input value={mapUrl} onChange={e => setMapUrl(e.target.value)}
+              placeholder="Naver / KakaoMap / Google Maps"
+              style={{ border:'none', outline:'none', background:'transparent',
+                fontFamily: T.font, fontSize: 13, color: T.primary,
+                width: '100%', textAlign: 'right' }}/>
+          </FieldRow>
+          <Divider/>
+          <FieldRow label="行程日期" icon="today">
+            <button onClick={() => setShowDayPicker(true)} style={{
+              border: 'none', background: 'transparent', cursor: 'pointer',
+              fontFamily: T.font, fontSize: 14, fontWeight: 600, color: T.primary,
+              padding: 0, display: 'flex', alignItems: 'center', gap: 4,
+            }}>
+              {DAYS[selectedDay].label}｜{DAYS[selectedDay].date}
+            </button>
+          </FieldRow>
+          <Divider/>
+          <FieldRow label="時間" icon="clock">
+            <input type="time" value={time} onChange={e => setTime(e.target.value)}
+              inputMode="numeric"
+              style={{ border:'none', outline:'none', background:'transparent',
+                fontFamily: T.font, fontSize: 14, fontWeight: 600, color: T.ink,
+                width: 100, textAlign: 'right' }}/>
+          </FieldRow>
+          <Divider/>
+          <FieldRow label="時長" icon="today">
+            <div style={{ display:'flex', alignItems:'center', gap: 4 }}>
+              <input
+                type="number" inputMode="numeric" min="0" max="23"
+                value={durH}
+                onChange={e => setDurH(Math.max(0, parseInt(e.target.value) || 0))}
+                style={{ border:'none', outline:'none', background:'transparent',
+                  fontFamily: T.font, fontSize: 14, fontWeight: 600, color: T.ink,
+                  width: 36, textAlign: 'right' }}/>
+              <span style={{ fontSize: 13, color: T.ink3, fontWeight: 600 }}>h</span>
+              <input
+                type="number" inputMode="numeric" min="0" max="59"
+                value={durM}
+                onChange={e => setDurM(Math.min(59, Math.max(0, parseInt(e.target.value) || 0)))}
+                style={{ border:'none', outline:'none', background:'transparent',
+                  fontFamily: T.font, fontSize: 14, fontWeight: 600, color: T.ink,
+                  width: 36, textAlign: 'right' }}/>
+              <span style={{ fontSize: 13, color: T.ink3, fontWeight: 600 }}>min</span>
+            </div>
+          </FieldRow>
+        </Card>
+
+        {/* 行程類型 */}
+        <Card pad={14}>
+          <FieldLabel>行程類型</FieldLabel>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginTop: 10 }}>
+            {CATS.map(c => {
+              const on = type === c.id;
+              return (
+                <button key={c.id} onClick={() => setType(c.id)} style={{
+                  border: on ? '2px solid ' + c.color : '1px solid ' + T.divider,
+                  background: on ? c.bg : '#fff', cursor: 'pointer',
+                  padding: '10px 8px', borderRadius: 14,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5,
+                }}>
+                  <Icon name={c.icon} size={20} color={c.color} strokeWidth={1.9}/>
+                  <span style={{ fontSize: 12, color: on ? c.color : T.ink2, fontWeight: 700 }}>{c.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </Card>
+
+        {/* 參與成員 */}
+        <Card pad={14}>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom: 10 }}>
+            <FieldLabel>參與成員</FieldLabel>
+            <div style={{ display:'flex', gap: 8 }}>
+              <button onClick={() => setParticipants(MEMBERS.map(m => m.id))} style={{
+                border:'none', background:'transparent', cursor:'pointer',
+                fontSize: 11, color: T.primary, fontWeight: 700, fontFamily: T.font,
+              }}>全選</button>
+              <button onClick={() => setParticipants([])} style={{
+                border:'none', background:'transparent', cursor:'pointer',
+                fontSize: 11, color: T.ink3, fontWeight: 700, fontFamily: T.font,
+              }}>清除</button>
+            </div>
+          </div>
+          <div style={{ display:'flex', gap: 8, flexWrap:'wrap' }}>
+            {MEMBERS.map(m => {
+              const on = participants.includes(m.id);
+              return (
+                <button key={m.id} onClick={() => toggleP(m.id)} style={{
+                  border: 'none',
+                  background: on ? m.color + '22' : T.bgSoft,
+                  cursor: 'pointer', padding: '6px 10px 6px 6px',
+                  borderRadius: 999, display:'flex', alignItems:'center', gap: 6,
+                  fontFamily: T.font, fontSize: 13, fontWeight: 600,
+                  color: on ? T.ink : T.ink3,
+                }}>
+                  <Avatar member={m} size={22}/>
+                  <span>{m.name}</span>
+                  {on && <Icon name="check" size={14} color={m.color} strokeWidth={2.5}/>}
+                </button>
+              );
+            })}
+          </div>
+          {participants.length > 0 && (
+            <div style={{ marginTop: 10, display:'flex', alignItems:'center', gap: 8 }}>
+              <AvatarStack ids={participants} size={22} max={7}/>
+              <span style={{ fontSize: 11, color: T.ink3 }}>{participants.length} 人參與</span>
+            </div>
+          )}
+        </Card>
+
+        {/* 備註 */}
+        <Card pad={0}>
+          <FieldRow label="備註" icon="note" align="top">
+            <textarea value={note} onChange={e => setNote(e.target.value)}
+              placeholder="選填備註"
+              rows={2}
+              style={{ border:'none', outline:'none', background:'transparent',
+                fontFamily: T.font, fontSize: 14, color: T.ink,
+                width: '100%', resize:'none', textAlign:'right' }}/>
+          </FieldRow>
+        </Card>
+
+        {/* 刪除 */}
+        {onDelete && (
+          <button onClick={onDelete} style={{
+            width: '100%', padding: 14, borderRadius: 20, border: 'none',
+            background: T.roseSoft, cursor: 'pointer',
+            fontSize: 14, fontWeight: 600, color: T.rose, fontFamily: T.font,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+          }}>
+            <Icon name="trash" size={16} color={T.rose} strokeWidth={2}/>
+            刪除此行程
+          </button>
+        )}
+      </div>
+
+      {/* Day picker bottom sheet */}
+      {showDayPicker && (
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'rgba(0,0,0,0.35)', zIndex: 100,
+          display: 'flex', alignItems: 'flex-end',
+        }} onClick={() => setShowDayPicker(false)}>
+          <div style={{
+            width: '100%', background: '#fff',
+            borderRadius: '24px 24px 0 0',
+            padding: '20px 16px 52px', boxSizing: 'border-box',
+          }} onClick={e => e.stopPropagation()}>
+            <div style={{
+              width: 36, height: 4, borderRadius: 2,
+              background: T.divider, margin: '0 auto 16px',
+            }}/>
+            <div style={{
+              fontSize: 15, fontWeight: 700, color: T.ink,
+              marginBottom: 14, textAlign: 'center',
+            }}>選擇行程日期</div>
+            {DAYS.map(d => (
+              <button key={d.idx}
+                onClick={() => { setSelectedDay(d.idx); setShowDayPicker(false); }}
+                style={{
+                  width: '100%', padding: '14px 20px',
+                  border: 'none',
+                  background: selectedDay === d.idx ? T.primarySoft : 'transparent',
+                  cursor: 'pointer', borderRadius: 14, marginBottom: 4,
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  fontFamily: T.font, boxSizing: 'border-box',
+                }}>
+                <span style={{
+                  fontSize: 15, fontWeight: 700,
+                  color: selectedDay === d.idx ? T.primary : T.ink,
+                }}>
+                  {d.label}
+                </span>
+                <span style={{ fontSize: 14, color: T.ink3 }}>
+                  {d.dow}　{d.date}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Itinerary (行程總覽)
+// ─────────────────────────────────────────────────────────────
+function ScreenItinerary({ initialDay = TRIP.todayIndex, allItemsExt, onSaveItemExt, onDeleteItemExt, onOpenEditForm }) {
+  const [active,       setActive]       = useState(initialDay);
+  const [memberFilter, setMemberFilter] = useState('all');
+
+  const [allItemsLocal, setAllItemsLocal] = useState(() => {
+    const m = {};
+    DAYS.forEach(d => { m[d.idx] = d.items.map(it => ({ ...it })); });
+    return m;
+  });
+
+  const allItems = allItemsExt || allItemsLocal;
+  const day   = DAYS[active];
+  const items = allItems[active] || [];
+  const isToday = active === TRIP.todayIndex;
+
+  const filteredItems = memberFilter === 'all'
+    ? items
+    : items.filter(it => (it.participants || []).includes(memberFilter));
+
+  const handleDelete = (itemId) => {
+    if (onDeleteItemExt) {
+      onDeleteItemExt(itemId, active);
+    } else {
+      setAllItemsLocal(prev => ({ ...prev, [active]: prev[active].filter(x => x.id !== itemId) }));
+    }
+  };
+
+  const openAdd  = () => { if (onOpenEditForm) onOpenEditForm(null, active); };
+  const openEdit = (it) => { if (onOpenEditForm) onOpenEditForm(it, active); };
+
+  return (
+    <>
+      {/* day tabs */}
+      <div style={{ paddingTop: 4 }}>
+        <DayTabs active={active} onChange={i => { setActive(i); setMemberFilter('all'); }}/>
+      </div>
+
+      {/* day header */}
+      <div style={{ padding: '0 20px 10px' }}>
+        <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', gap: 8 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display:'flex', alignItems:'center', gap: 8 }}>
+              <div style={{ fontSize: 22, fontWeight: 700, color: T.ink, letterSpacing: -0.3 }}>
+                {day.title}
+              </div>
+              {isToday && <Pill bg={T.orange} color="#fff" size="s">今天</Pill>}
+            </div>
+            <div style={{ fontSize: 13, color: T.ink3, marginTop: 4 }}>
+              {day.date} {day.dow} · {filteredItems.length} 個行程
+            </div>
+          </div>
+          <div style={{ flexShrink: 0 }}><WeatherChip {...day.weather}/></div>
+        </div>
+      </div>
+
+      {/* 成員篩選 chips */}
+      <div style={{
+        padding: '0 0 12px 16px', display: 'flex', gap: 6,
+        overflowX: 'auto', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch',
+      }}>
+        {[{ id: 'all', name: '全部' }, ...MEMBERS].map(m => {
+          const on = memberFilter === m.id;
+          return (
+            <button key={m.id} onClick={() => setMemberFilter(m.id)} style={{
+              flexShrink: 0, padding: '5px 12px', borderRadius: 999,
+              border: on ? 'none' : '1px solid ' + T.divider,
+              background: on ? T.primary : '#fff',
+              color: on ? '#fff' : T.ink2,
+              fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: T.font,
+            }}>{m.name}</button>
+          );
+        })}
+        <div style={{ width: 20, flexShrink: 0 }}/>
+      </div>
+
+      {/* 行程卡片 */}
+      <div style={{ padding: '0 20px', display:'flex', flexDirection:'column', gap: 10 }}>
+        {filteredItems.map((it, i) => {
+          const cat = findCat(it.type);
+          return (
+            <div key={it.id} style={{ display:'flex', gap: 10, position:'relative' }}>
+              {/* time gutter */}
+              <div style={{ width: 52, flexShrink: 0, paddingTop: 18, position:'relative' }}>
+                <div style={{
+                  fontSize: 13, fontWeight: 700, color: T.ink, textAlign:'right',
+                  fontVariantNumeric:'tabular-nums', letterSpacing:-0.3,
+                }}>{it.time}</div>
+                <div style={{ fontSize: 10, color: T.ink3, textAlign:'right', marginTop: 2 }}>{formatDurLabel(parseDurMinutes(it.dur))}</div>
+                {i < filteredItems.length - 1 && (
+                  <div style={{
+                    position:'absolute', top: 60, bottom: -10, right: -6,
+                    width: 2, background: T.divider,
+                  }}/>
+                )}
+                <div style={{
+                  position:'absolute', top: 24, right: -10,
+                  width: 10, height: 10, borderRadius:'50%',
+                  background: '#fff', border: '2px solid ' + cat.color,
+                }}/>
+              </div>
+
+              {/* card */}
+              <Card pad={0} style={{ flex: 1, overflow:'hidden' }}>
+                <div style={{ padding: '14px 14px 10px' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap: 8, marginBottom: 6 }}>
+                    <CatTile catId={it.type} size={26} radius={8}/>
+                    <span style={{ fontSize: 10, color: cat.color, fontWeight: 700, letterSpacing: 0.6, textTransform:'uppercase' }}>
+                      {cat.label}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 15.5, fontWeight: 700, color: T.ink, letterSpacing:-0.2, lineHeight: 1.3 }}>
+                    {it.title}
+                  </div>
+                  <div style={{ display:'flex', alignItems:'center', gap: 6, marginTop: 8, fontSize: 12.5, color: T.ink2 }}>
+                    <Icon name="pin" size={13} color={T.ink3}/>
+                    <span style={{ overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{it.addr}</span>
+                  </div>
+
+                  {it.participants && it.participants.length > 0 && (
+                    <div style={{ display:'flex', alignItems:'center', gap: 7, marginTop: 10 }}>
+                      <AvatarStack ids={it.participants} size={22} max={7}/>
+                      <span style={{ fontSize: 11, color: T.ink3, fontWeight: 500 }}>
+                        {it.participants.length === MEMBERS.length
+                          ? '全員參與'
+                          : it.participants.length + ' 人'}
+                      </span>
+                    </div>
+                  )}
+
+                  {it.note && (
+                    <div style={{
+                      fontSize: 12, color: T.ink2, marginTop: 8,
+                      padding: '8px 12px', background: T.bgSoft, borderRadius: 12,
+                      borderLeft: '3px solid ' + cat.color,
+                    }}>{it.note}</div>
+                  )}
+                </div>
+
+                {/* footer */}
+                <div style={{ display:'flex', borderTop: '1px solid ' + T.divider }}>
+                  <button onClick={() => {
+                    const url = it.mapUrl
+                      ? it.mapUrl
+                      : it.addr
+                        ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(it.addr)
+                        : null;
+                    if (url) window.open(url, '_blank');
+                  }} style={{
+                    flex: 1, padding: '11px 12px', border:'none', background:'transparent',
+                    cursor: (it.mapUrl || it.addr) ? 'pointer' : 'default',
+                    display:'flex', alignItems:'center', justifyContent:'center',
+                    gap: 6, fontSize: 13, fontWeight: 600,
+                    color: (it.mapUrl || it.addr) ? T.primary : T.ink4, fontFamily: T.font,
+                  }}>
+                    <Icon name="map" size={16} color={(it.mapUrl || it.addr) ? T.primary : T.ink4} strokeWidth={2}/>
+                    地圖導航
+                  </button>
+                  <div style={{ width: 1, background: T.divider }}/>
+                  <button onClick={() => openEdit(it)} style={{
+                    width: 52, border:'none', background:'transparent',
+                    cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center',
+                  }}>
+                    <Icon name="edit" size={17} color={T.ink3} strokeWidth={1.8}/>
+                  </button>
+                  <div style={{ width: 1, background: T.divider }}/>
+                  <button onClick={() => handleDelete(it.id)} style={{
+                    width: 52, border:'none', background:'transparent',
+                    cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center',
+                  }}>
+                    <Icon name="trash" size={17} color={T.rose} strokeWidth={1.8}/>
+                  </button>
+                </div>
+              </Card>
+            </div>
+          );
+        })}
+
+        {filteredItems.length === 0 && (
+          <Card pad={28} style={{ textAlign:'center' }}>
+            <div style={{ fontSize: 13, color: T.ink3 }}>
+              {memberFilter === 'all'
+                ? '此天尚無行程'
+                : (MEMBERS.find(m => m.id === memberFilter)?.name ?? '') + ' 當天沒有行程'}
+            </div>
+          </Card>
+        )}
+
+        <button onClick={openAdd} style={{
+          width: '100%', padding: '13px 16px', borderRadius: 20,
+          border: '2px dashed ' + T.divider, background: 'transparent',
+          cursor: 'pointer', fontSize: 14, fontWeight: 600, color: T.ink3,
+          fontFamily: T.font, display:'flex', alignItems:'center', justifyContent:'center', gap: 8,
+        }}>
+          <Icon name="plus" size={18} color={T.ink3}/>
+          新增行程
+        </button>
+      </div>
+
+      <div style={{ height: 24 }}/>
+    </>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Stay helpers
+// ─────────────────────────────────────────────────────────────
+const stayInputStyle = {
+  border: 'none', outline: 'none', background: 'transparent',
+  fontFamily: 'inherit', fontSize: 14, fontWeight: 600, color: '#2A2A2A',
+  width: '100%', textAlign: 'right',
+};
+
+function StayFieldCard({ children }) {
+  return (
+    <div style={{
+      background: '#fff', borderRadius: 18, overflow: 'hidden',
+      boxShadow: T.shadowCard, border: '1px solid rgba(236,229,213,0.6)',
+    }}>
+      {children}
+    </div>
+  );
+}
+
+function StayRow({ label, icon, children }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '13px 16px' }}>
+      <Icon name={icon} size={18} color={T.ink3}/>
+      <span style={{ fontSize: 13, color: T.ink2, fontWeight: 600, flexShrink: 0, minWidth: 68 }}>
+        {label}
+      </span>
+      <div style={{ flex: 1, minWidth: 0 }}>{children}</div>
+    </div>
+  );
+}
+
+function StayDivider() {
+  return <div style={{ height: 1, background: T.divider, marginLeft: 44 }}/>;
+}
+
+// ─────────────────────────────────────────────────────────────
+// StayDayPicker — 日期選擇 bottom sheet（住宿用）
+// ─────────────────────────────────────────────────────────────
+function StayDayPicker({ current, onSelect, onClose }) {
+  return (
+    <div style={{
+      position: 'absolute', inset: 0,
+      background: 'rgba(0,0,0,0.35)', zIndex: 200,
+      display: 'flex', alignItems: 'flex-end',
+    }} onClick={onClose}>
+      <div style={{
+        width: '100%', background: '#fff',
+        borderRadius: '24px 24px 0 0',
+        padding: '20px 16px 52px', boxSizing: 'border-box',
+      }} onClick={e => e.stopPropagation()}>
+        <div style={{ width: 36, height: 4, borderRadius: 2, background: T.divider, margin: '0 auto 16px' }}/>
+        <div style={{ fontSize: 15, fontWeight: 700, color: T.ink, marginBottom: 14, textAlign: 'center' }}>
+          選擇日期
+        </div>
+        {DAYS.map(d => (
+          <button key={d.idx} onClick={() => { onSelect(d.idx); onClose(); }} style={{
+            width: '100%', padding: '14px 20px', border: 'none',
+            background: current === d.idx ? T.primarySoft : 'transparent',
+            cursor: 'pointer', borderRadius: 14, marginBottom: 4,
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            fontFamily: T.font, boxSizing: 'border-box',
+          }}>
+            <span style={{ fontSize: 15, fontWeight: 700, color: current === d.idx ? T.primary : T.ink }}>
+              {d.label}
+            </span>
+            <span style={{ fontSize: 14, color: T.ink3 }}>{d.dow}　{d.date}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// StayForm — 新增 / 編輯住宿 overlay
+// ─────────────────────────────────────────────────────────────
+function StayForm({ stay, onClose, onSave, onDelete }) {
+  // 解析舊格式資料（backward compat）
+  const parseDay = (str) => {
+    if (str == null) return TRIP.todayIndex;
+    if (typeof str === 'number') return Math.max(0, Math.min(DAYS.length - 1, str));
+    for (let i = 0; i < DAYS.length; i++) {
+      if (String(str).includes(DAYS[i].date)) return i;
+    }
+    return TRIP.todayIndex;
+  };
+  const parseTime = (str) => {
+    if (!str) return '';
+    const m = String(str).match(/(\d{1,2}:\d{2})/);
+    return m ? m[1] : '';
+  };
+
+  const [name,         setName]         = useState(stay?.name      || '');
+  const [checkInDay,   setCheckInDay]   = useState(() => stay?.checkInDay  != null ? stay.checkInDay  : parseDay(stay?.checkIn));
+  const [checkInTime,  setCheckInTime]  = useState(() => stay?.checkInTime || parseTime(stay?.checkIn)  || '');
+  const [checkOutDay,  setCheckOutDay]  = useState(() => stay?.checkOutDay != null ? stay.checkOutDay : parseDay(stay?.checkOut));
+  const [checkOutTime, setCheckOutTime] = useState(() => stay?.checkOutTime || parseTime(stay?.checkOut) || '');
+  const [addr,         setAddr]         = useState(stay?.addr      || '');
+  const [mapUrl,       setMapUrl]       = useState(stay?.mapUrl    || stay?.mapsUrl || '');
+  const [phone,        setPhone]        = useState(stay?.phone     || '');
+  const [code,         setCode]         = useState(stay?.code      || '');
+  const [breakfast,    setBreakfast]    = useState(stay?.breakfast || '');
+  const [notes,        setNotes]        = useState(stay?.notes     || '');
+  const [confirmDel,   setConfirmDel]   = useState(false);
+  const [showInPicker, setShowInPicker]   = useState(false);
+  const [showOutPicker, setShowOutPicker] = useState(false);
+
+  const autoNights = checkOutDay > checkInDay ? checkOutDay - checkInDay : 0;
+
+  const fmtDay = (dayIdx, time) => {
+    const d = DAYS[dayIdx];
+    const dow = d.dow.replace('週', '');
+    return d.date + '（' + dow + '）' + (time ? '  ' + time : '');
+  };
+
+  const handleSave = () => {
+    onSave({
+      id:           stay?.id || ('st' + Date.now()),
+      name:         name.trim() || '未命名住宿',
+      checkInDay,   checkInTime,
+      checkOutDay,  checkOutTime,
+      checkIn:      fmtDay(checkInDay, checkInTime),
+      checkOut:     fmtDay(checkOutDay, checkOutTime),
+      nights:       autoNights,
+      addr:         addr.trim(),
+      mapUrl:       mapUrl.trim(),
+      mapsUrl:      mapUrl.trim(),   // backward compat
+      phone:        phone.trim(),
+      code:         code.trim(),
+      breakfast:    breakfast.trim(),
+      notes:        notes.trim(),
+    });
+  };
+
+  return (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      maxWidth: 430, margin: '0 auto',
+      background: T.bg, zIndex: 100,
+      display: 'flex', flexDirection: 'column',
+      fontFamily: T.font, color: T.ink,
+    }}>
+      {/* header */}
+      <div style={{
+        padding: 'calc(env(safe-area-inset-top, 0px) + 20px) 16px 12px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        background: T.bg,
+      }}>
+        <button onClick={onClose} style={{
+          border: '1px solid ' + T.divider, background: '#fff', cursor: 'pointer',
+          width: 38, height: 38, borderRadius: 12, boxShadow: T.shadowSoft,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <Icon name="close" size={20} color={T.ink2}/>
+        </button>
+        <div style={{ fontSize: 17, fontWeight: 700, color: T.ink, letterSpacing: -0.2 }}>
+          {stay ? '編輯住宿' : '新增住宿'}
+        </div>
+        <button onClick={handleSave} style={{
+          border: 'none', background: T.primary, color: '#fff',
+          cursor: 'pointer', padding: '8px 16px', borderRadius: 20,
+          fontFamily: T.font, fontSize: 14, fontWeight: 700,
+        }}>儲存</button>
+      </div>
+
+      {/* body */}
+      <div style={{ flex: 1, overflow: 'auto', padding: '4px 16px 40px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+        {/* 基本資訊 */}
+        <StayFieldCard>
+          <StayRow label="住宿名稱" icon="bed">
+            <input value={name} onChange={e => setName(e.target.value)}
+              placeholder="飯店 / 民宿名稱" style={stayInputStyle}/>
+          </StayRow>
+          <StayDivider/>
+          <StayRow label="入住日期" icon="calendar">
+            <button onClick={() => setShowInPicker(true)} style={{
+              border: 'none', background: 'transparent', cursor: 'pointer',
+              fontFamily: T.font, fontSize: 14, fontWeight: 600, color: T.primary, padding: 0,
+            }}>
+              {DAYS[checkInDay].date}（{DAYS[checkInDay].dow.replace('週','')}）
+            </button>
+          </StayRow>
+          <StayDivider/>
+          <StayRow label="入住時間" icon="clock">
+            <input type="time" value={checkInTime} onChange={e => setCheckInTime(e.target.value)}
+              style={{ ...stayInputStyle, width: 110 }}/>
+          </StayRow>
+          <StayDivider/>
+          <StayRow label="退房日期" icon="calendar">
+            <button onClick={() => setShowOutPicker(true)} style={{
+              border: 'none', background: 'transparent', cursor: 'pointer',
+              fontFamily: T.font, fontSize: 14, fontWeight: 600, color: T.primary, padding: 0,
+            }}>
+              {DAYS[checkOutDay].date}（{DAYS[checkOutDay].dow.replace('週','')}）
+            </button>
+          </StayRow>
+          <StayDivider/>
+          <StayRow label="退房時間" icon="clock">
+            <input type="time" value={checkOutTime} onChange={e => setCheckOutTime(e.target.value)}
+              style={{ ...stayInputStyle, width: 110 }}/>
+          </StayRow>
+          <StayDivider/>
+          <StayRow label="晚數" icon="moon">
+            <span style={{ ...stayInputStyle, color: T.ink2, display: 'block' }}>
+              {autoNights > 0 ? autoNights + ' 晚' : '—'}
+            </span>
+          </StayRow>
+        </StayFieldCard>
+
+        {/* 地點 */}
+        <StayFieldCard>
+          <StayRow label="地址" icon="pin">
+            <input value={addr} onChange={e => setAddr(e.target.value)}
+              placeholder="飯店地址" style={stayInputStyle}/>
+          </StayRow>
+          <StayDivider/>
+          <StayRow label="地圖連結" icon="map">
+            <input value={mapUrl} onChange={e => setMapUrl(e.target.value)}
+              placeholder="Naver / KakaoMap / Google Maps" style={stayInputStyle}/>
+          </StayRow>
+          <StayDivider/>
+          <StayRow label="電話" icon="phone">
+            <input value={phone} onChange={e => setPhone(e.target.value)}
+              placeholder="+82-2-xxx-xxxx" style={stayInputStyle}/>
+          </StayRow>
+        </StayFieldCard>
+
+        {/* 訂房資訊 */}
+        <StayFieldCard>
+          <StayRow label="訂房代碼" icon="ticket">
+            <input value={code} onChange={e => setCode(e.target.value)}
+              placeholder="訂房代碼 / 備註" style={stayInputStyle}/>
+          </StayRow>
+          <StayDivider/>
+          <StayRow label="早餐" icon="coffee">
+            <input value={breakfast} onChange={e => setBreakfast(e.target.value)}
+              placeholder="含早餐 / 不含" style={stayInputStyle}/>
+          </StayRow>
+        </StayFieldCard>
+
+        {/* 備註 */}
+        <StayFieldCard>
+          <StayRow label="備註" icon="note">
+            <textarea value={notes} onChange={e => setNotes(e.target.value)}
+              placeholder="選填備註" rows={2}
+              style={{ ...stayInputStyle, resize: 'none', lineHeight: 1.5 }}/>
+          </StayRow>
+        </StayFieldCard>
+
+        {/* 刪除 */}
+        {onDelete && !confirmDel && (
+          <button onClick={() => setConfirmDel(true)} style={{
+            width: '100%', padding: 14, borderRadius: 20, border: 'none',
+            background: T.roseSoft, cursor: 'pointer',
+            fontSize: 14, fontWeight: 600, color: T.rose, fontFamily: T.font,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+          }}>
+            <Icon name="trash" size={16} color={T.rose} strokeWidth={2}/>
+            刪除此住宿
+          </button>
+        )}
+
+        {confirmDel && (
+          <div style={{ background: T.roseSoft, borderRadius: 18, padding: '16px' }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: T.ink, textAlign: 'center', marginBottom: 12 }}>
+              確定要刪除此住宿嗎？
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button onClick={() => setConfirmDel(false)} style={{
+                flex: 1, padding: '11px 0', borderRadius: 16,
+                border: '1px solid ' + T.divider, background: '#fff',
+                fontSize: 14, fontWeight: 600, color: T.ink, cursor: 'pointer', fontFamily: T.font,
+              }}>取消</button>
+              <button onClick={() => onDelete(stay.id)} style={{
+                flex: 1, padding: '11px 0', borderRadius: 16,
+                border: 'none', background: T.rose,
+                fontSize: 14, fontWeight: 700, color: '#fff', cursor: 'pointer', fontFamily: T.font,
+              }}>確認刪除</button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {showInPicker && (
+        <StayDayPicker current={checkInDay} onSelect={setCheckInDay} onClose={() => setShowInPicker(false)}/>
+      )}
+      {showOutPicker && (
+        <StayDayPicker current={checkOutDay} onSelect={setCheckOutDay} onClose={() => setShowOutPicker(false)}/>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// ScreenStay — 住宿資訊頁
+// ─────────────────────────────────────────────────────────────
+function ScreenStay({ stays, onEditStay, onDeleteStay }) {
+  const tonight = stays.find(s =>
+    s.covers && s.covers.includes(TRIP.todayIndex)
+  );
+
+  return (
+    <>
+      {/* 今晚住宿 banner */}
+      {tonight && (
+        <div style={{ padding: '4px 16px 12px' }}>
+          <div style={{
+            padding: '12px 16px', borderRadius: 18,
+            background: 'linear-gradient(135deg, ' + T.primary + '18 0%, ' + T.primary + '08 100%)',
+            border: '1.5px solid ' + T.primary + '33',
+            display: 'flex', alignItems: 'center', gap: 10,
+          }}>
+            <Icon name="moon" size={18} color={T.primary}/>
+            <div>
+              <div style={{ fontSize: 11, color: T.primary, fontWeight: 700, letterSpacing: 0.6 }}>
+                今晚住宿
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: T.ink, marginTop: 2 }}>
+                {tonight.name}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 住宿清單 */}
+      <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {stays.map(s => (
+          <StayCard key={s.id} stay={s} onEdit={() => onEditStay(s)} onDelete={() => onDeleteStay(s.id)}/>
+        ))}
+
+        {stays.length === 0 && (
+          <Card pad={32} style={{ textAlign: 'center' }}>
+            <Icon name="bed" size={32} color={T.ink4} strokeWidth={1.4}/>
+            <div style={{ fontSize: 13, color: T.ink3, marginTop: 10 }}>尚未新增住宿</div>
+          </Card>
+        )}
+      </div>
+
+      <div style={{ height: 24 }}/>
+    </>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// StayCard — 住宿卡片
+// ─────────────────────────────────────────────────────────────
+function StayCard({ stay, onEdit, onDelete }) {
+  const [confirmDel, setConfirmDel] = useState(false);
+
+  const mapTarget = (stay.mapUrl || stay.mapsUrl)
+    ? (stay.mapUrl || stay.mapsUrl)
+    : stay.addr
+      ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(stay.addr)
+    : null;
+
+  return (
+    <Card pad={0}>
+      {/* hero */}
+      <div style={{ padding: '16px 16px 14px' }}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: T.ink, letterSpacing: -0.2 }}>
+          {stay.name}
+        </div>
+        {stay.checkIn && (
+          <div style={{ fontSize: 12, color: T.ink3, marginTop: 5, lineHeight: 1.5 }}>
+            {stay.checkIn}
+            {stay.checkOut && (' → ' + stay.checkOut)}
+          </div>
+        )}
+        {stay.nights > 0 && (
+          <div style={{ marginTop: 8 }}>
+            <Pill size="s">{stay.nights} 晚</Pill>
+          </div>
+        )}
+      </div>
+
+      <div style={{ height: 1, background: T.divider }}/>
+
+      {/* details */}
+      <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {stay.addr && (
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+            <Icon name="pin" size={15} color={T.ink3}/>
+            <span style={{ fontSize: 13, color: T.ink2, lineHeight: 1.4, flex: 1 }}>{stay.addr}</span>
+          </div>
+        )}
+
+        {stay.phone && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Icon name="phone" size={14} color={T.ink3}/>
+            <span style={{ fontSize: 13, color: T.ink2 }}>{stay.phone}</span>
+          </div>
+        )}
+
+        {stay.code && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Icon name="ticket" size={15} color={T.ink3}/>
+            <span style={{ fontSize: 13, color: T.ink2 }}>{stay.code}</span>
+          </div>
+        )}
+
+        {stay.breakfast && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Icon name="coffee" size={15} color={T.ink3}/>
+            <span style={{ fontSize: 13, color: T.ink2 }}>{stay.breakfast}</span>
+          </div>
+        )}
+
+        {stay.notes && (
+          <div style={{
+            background: T.yellowSoft, borderRadius: 12, padding: '10px 12px',
+            fontSize: 13, color: T.ink2, lineHeight: 1.5,
+          }}>
+            {stay.notes}
+          </div>
+        )}
+      </div>
+
+      {/* footer — 地圖導航 / 編輯 / 刪除 */}
+      {!confirmDel && (
+        <div style={{ display: 'flex', borderTop: '1px solid ' + T.divider }}>
+          <button onClick={() => { if (mapTarget) window.open(mapTarget, '_blank'); }} style={{
+            flex: 1, padding: '11px 12px', border: 'none', background: 'transparent',
+            cursor: mapTarget ? 'pointer' : 'default',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            gap: 6, fontSize: 13, fontWeight: 600,
+            color: mapTarget ? T.primary : T.ink4, fontFamily: T.font,
+          }}>
+            <Icon name="map" size={16} color={mapTarget ? T.primary : T.ink4} strokeWidth={2}/>
+            地圖導航
+          </button>
+          <div style={{ width: 1, background: T.divider }}/>
+          <button onClick={onEdit} style={{
+            width: 52, border: 'none', background: 'transparent',
+            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Icon name="edit" size={17} color={T.ink3} strokeWidth={1.8}/>
+          </button>
+          <div style={{ width: 1, background: T.divider }}/>
+          <button onClick={() => setConfirmDel(true)} style={{
+            width: 52, border: 'none', background: 'transparent',
+            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Icon name="trash" size={17} color={T.rose} strokeWidth={1.8}/>
+          </button>
+        </div>
+      )}
+
+      {/* 確認刪除 */}
+      {confirmDel && (
+        <div style={{ borderTop: '1px solid ' + T.divider, padding: '14px 16px' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: T.ink, textAlign: 'center', marginBottom: 10 }}>
+            確定要刪除這筆住宿嗎？
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={() => setConfirmDel(false)} style={{
+              flex: 1, padding: '10px 0', borderRadius: 14,
+              border: '1px solid ' + T.divider, background: '#fff',
+              fontSize: 13, fontWeight: 600, color: T.ink, cursor: 'pointer', fontFamily: T.font,
+            }}>取消</button>
+            <button onClick={() => { onDelete && onDelete(); }} style={{
+              flex: 1, padding: '10px 0', borderRadius: 14,
+              border: 'none', background: T.rose,
+              fontSize: 13, fontWeight: 700, color: '#fff', cursor: 'pointer', fontFamily: T.font,
+            }}>確認刪除</button>
+          </div>
+        </div>
+      )}
+    </Card>
+  );
+}
+
+// ═══ screen-expense.jsx ═══
+// screen-expense.jsx — Expense 消費記錄 + Add Expense 新增消費
+
+// ─────────────────────────────────────────────────────────────
+// Helper: 計算某成員應分攤金額（KRW）
+// ─────────────────────────────────────────────────────────────
+function calcMemberShare(memberId, expenses) {
+  return expenses.reduce((sum, e) => {
+    if (!e.split || !e.split.includes(memberId)) return sum;
+    const amount = Number(e.krw) || 0;
+    const splitCount = e.split.length || 1;
+    return sum + amount / splitCount;
+  }, 0);
+}
+
+// ─────────────────────────────────────────────────────────────
+// Expense (消費記錄)
+// ─────────────────────────────────────────────────────────────
+function ScreenExpense({ expenses, onAddExpense, onViewSplit, onEditExpense, memberBudgets, onEditBudget }) {
+  // 預設「全部」視角
+  const [memberView, setMemberView] = useState('all');
+  const [cat, setCat] = useState('all');
+  const [day, setDay] = useState('all');
+
+  const filtered = expenses.filter(e =>
+    (cat === 'all' || e.cat === cat) &&
+    (day === 'all' || e.day === day)
+  );
+
+  // ── 英雄卡片資料 ──────────────────────────────────────────
+  const allTWD = krwToTwd(expenses.reduce((s, e) => s + e.krw, 0));
+  const totalBudget = MEMBERS.reduce((s, m) => s + ((memberBudgets && memberBudgets[m.id]) || 50000), 0);
+
+  let heroTitle, heroSpent, heroBudget, heroSubtitle;
+  if (memberView === 'all') {
+    heroTitle    = '旅程總花費';
+    heroSpent    = allTWD;
+    heroBudget   = totalBudget;
+    heroSubtitle = `${expenses.length} 筆消費`;
+  } else {
+    const m = MEMBERS.find(x => x.id === memberView);
+    const shareKRW = calcMemberShare(memberView, expenses);
+    const mb = (memberBudgets && memberBudgets[memberView]) || 50000;
+    heroTitle    = `${m.name}的旅程總花費`;
+    heroSpent    = krwToTwd(shareKRW);
+    heroBudget   = mb;
+    heroSubtitle = '應分攤金額';
+  }
+  const pct = heroBudget > 0 ? Math.min(100, (heroSpent / heroBudget) * 100) : 0;
+
+  // ── 成員消費總覽 ──────────────────────────────────────────
+  const memberShares = MEMBERS.map(m => ({
+    ...m,
+    shareTWD: krwToTwd(calcMemberShare(m.id, expenses)),
+  }));
+
+  // ── 消費清單（依日期群組）────────────────────────────────
+  const groups = {};
+  filtered.slice().reverse().forEach(e => {
+    if (!groups[e.date]) groups[e.date] = [];
+    groups[e.date].push(e);
+  });
+
+  return (
+    <>
+      {/* ── 英雄：旅程總花費 + 成員切換 ── */}
+      <div style={{ padding: '4px 16px 14px' }}>
+        <div style={{
+          padding: 18, borderRadius: 22,
+          background: `linear-gradient(135deg, ${T.orange}22 0%, ${T.yellow}33 100%)`,
+          border: '1.5px solid ' + T.orange + '33',
+        }}>
+          {/* 成員切換 pills */}
+          <div style={{
+            display: 'flex', gap: 6, overflowX: 'auto', marginBottom: 14,
+            scrollbarWidth: 'none', paddingBottom: 2,
+          }}>
+            {[{ id: 'all', name: '全部' }, ...MEMBERS].map(m => {
+              const on = memberView === m.id;
+              return (
+                <button key={m.id} onClick={() => setMemberView(m.id)} style={{
+                  flexShrink: 0, padding: '5px 12px', borderRadius: 999,
+                  border: on ? 'none' : '1px solid ' + T.orange + '66',
+                  background: on ? T.orange : 'rgba(255,255,255,0.65)',
+                  color: on ? '#fff' : T.ink2,
+                  fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                  fontFamily: T.font, letterSpacing: 0.2,
+                }}>{m.name}</button>
+              );
+            })}
+          </div>
+
+          {/* 標題 + 修改預算按鈕（只在單一成員時顯示） */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ fontSize: 11, color: T.ink3, fontWeight: 700, letterSpacing: 1 }}>
+              {heroTitle}
+            </div>
+            {memberView !== 'all' && onEditBudget && (
+              <button onClick={() => onEditBudget(memberView)} style={{
+                border: 'none', background: 'rgba(255,255,255,0.55)',
+                borderRadius: 20, padding: '4px 10px',
+                fontSize: 11, fontWeight: 700, color: T.ink2,
+                cursor: 'pointer', fontFamily: T.font,
+                display: 'flex', alignItems: 'center', gap: 4,
+              }}>
+                <Icon name="edit" size={12} color={T.ink2}/>
+                修改預算
+              </button>
+            )}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 4 }}>
+            <Money twd={heroSpent} size="xl"/>
+            {memberView !== 'all' && (
+              <span style={{ fontSize: 13, color: T.ink3, fontWeight: 500 }}>
+                / {fmtTWD(heroBudget)}
+              </span>
+            )}
+          </div>
+          <div style={{ fontSize: 12, color: T.ink2, marginTop: 2 }}>{heroSubtitle}</div>
+
+          {/* 進度條 + 剩餘（僅個人視角） */}
+          {memberView !== 'all' && (
+            <>
+              <div style={{
+                height: 8, borderRadius: 8, background: 'rgba(255,255,255,0.7)',
+                marginTop: 14, overflow: 'hidden',
+              }}>
+                <div style={{
+                  width: pct + '%', height: '100%',
+                  background: pct > 80 ? T.rose : T.orange,
+                  borderRadius: 8,
+                }}/>
+              </div>
+              <div style={{
+                display: 'flex', justifyContent: 'space-between', fontSize: 11,
+                color: T.ink3, marginTop: 6, fontWeight: 600,
+              }}>
+                <span>已用 {pct.toFixed(0)}%</span>
+                <span>剩餘 {fmtTWD(heroBudget - heroSpent)}</span>
+              </div>
+            </>
+          )}
+
+        </div>
+      </div>
+
+      {/* ── 成員消費總覽（點擊切換視角）── */}
+      <div style={{ padding: '0 16px' }}>
+        <Card pad={14}>
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            marginBottom: 12,
+          }}>
+            <span style={{ fontSize: 12, color: T.ink3, fontWeight: 600, letterSpacing: 0.5 }}>
+              成員消費總覽
+            </span>
+            <button
+              onClick={onViewSplit}
+              style={{
+                border: 'none', background: 'transparent', cursor: 'pointer',
+                fontSize: 12, color: T.primary, fontWeight: 600, fontFamily: T.font,
+                padding: 0,
+              }}
+            >查看分帳 →</button>
+          </div>
+          {/* 7 人橫向滑動 — 點擊切換上方視角 */}
+          <div style={{
+            display: 'flex', gap: 4,
+            overflowX: 'auto', scrollbarWidth: 'none',
+            paddingBottom: 2, marginRight: -14, paddingRight: 14,
+          }}>
+            {memberShares.map(m => {
+              const on = memberView === m.id;
+              return (
+                <div key={m.id} onClick={() => setMemberView(m.id)} style={{
+                  flexShrink: 0, cursor: 'pointer',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center',
+                  gap: 5, padding: '4px 6px', borderRadius: 12,
+                  background: on ? T.primarySoft : 'transparent',
+                  transition: 'background .15s',
+                }}>
+                  <Avatar member={m} size={32}/>
+                  <span style={{
+                    fontSize: 11.5, fontWeight: 700, color: on ? T.primary : T.ink,
+                    whiteSpace: 'nowrap',
+                  }}>{m.name}</span>
+                  <span style={{
+                    fontSize: 10.5, fontWeight: 600, color: T.primary,
+                    fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap',
+                  }}>{fmtTWD(m.shareTWD)}</span>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      </div>
+
+      {/* ── 篩選 ── */}
+      <SectionHeader title="篩選 / 全部消費"/>
+      <div style={{ padding: '0 16px 8px', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <FilterChip active={cat === 'all'} onClick={() => setCat('all')} label="全部"/>
+        {CATS.map(c => (
+          <FilterChip key={c.id} active={cat === c.id} onClick={() => setCat(c.id)}
+            label={c.label} dotColor={c.color}/>
+        ))}
+      </div>
+      <div style={{ padding: '0 16px 8px', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <FilterChip active={day === 'all'} onClick={() => setDay('all')} label="全部日期" small/>
+        {DAYS.map(d => (
+          <FilterChip key={d.idx} active={day === d.idx} onClick={() => setDay(d.idx)}
+            label={d.label + ' · ' + d.date} small/>
+        ))}
+      </div>
+
+      {/* ── 消費清單 ── */}
+      <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {Object.entries(groups).map(([date, list]) => {
+          const dayTotal = list.reduce((s, e) => s + e.krw, 0);
+          return (
+            <div key={date}>
+              <div style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                padding: '4px 6px 8px',
+              }}>
+                <span style={{ fontSize: 12, color: T.ink3, fontWeight: 700, letterSpacing: 0.5 }}>
+                  {date}
+                </span>
+                <span style={{ fontSize: 12, color: T.ink3, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+                  {fmtKRW(dayTotal)}
+                </span>
+              </div>
+              <Card pad={0}>
+                {list.map((e, i) => <ExpenseRow key={e.id} e={e} last={i === list.length - 1} onEdit={onEditExpense}/>)}
+              </Card>
+            </div>
+          );
+        })}
+        {filtered.length === 0 && (
+          <Card pad={32} style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 13, color: T.ink3 }}>沒有符合條件的消費</div>
+          </Card>
+        )}
+      </div>
+
+      <div style={{ height: 24 }}/>
+    </>
+  );
+}
+
+function FilterChip({ active, onClick, label, dotColor, small }) {
+  return (
+    <button onClick={onClick} style={{
+      border: active ? 'none' : '1px solid ' + T.divider,
+      background: active ? T.primary : '#fff',
+      color: active ? '#fff' : T.ink2,
+      padding: small ? '5px 10px' : '6px 12px',
+      borderRadius: 999, cursor: 'pointer', fontFamily: T.font,
+      fontSize: small ? 11 : 12, fontWeight: 600,
+      display: 'inline-flex', alignItems: 'center', gap: 6,
+    }}>
+      {dotColor && !active && (
+        <span style={{ width: 7, height: 7, borderRadius: '50%', background: dotColor }}/>
+      )}
+      {label}
+    </button>
+  );
+}
+
+function ExpenseRow({ e, last, onEdit }) {
+  const c = findCat(e.cat);
+  const p = findMember(e.payer);
+  return (
+    <div onClick={() => onEdit && onEdit(e)} style={{
+      display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px',
+      borderBottom: last ? 'none' : '1px solid ' + T.divider,
+      cursor: onEdit ? 'pointer' : 'default',
+    }}>
+      <CatTile catId={e.cat} size={38}/>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{
+          fontSize: 14, fontWeight: 600, color: T.ink, letterSpacing: -0.1,
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+        }}>{e.item}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+          <Avatar member={p} size={16}/>
+          <span style={{ fontSize: 11, color: T.ink3, fontWeight: 600 }}>{p.name} 付</span>
+          <span style={{ width: 3, height: 3, borderRadius: '50%', background: T.ink4 }}/>
+          <AvatarStack ids={e.split} size={16} max={4}/>
+          <span style={{ fontSize: 11, color: T.ink3 }}>分</span>
+        </div>
+      </div>
+      <div style={{ textAlign: 'right' }}>
+        <Money krw={e.krw} currency="KRW" size="s"/>
+        <div style={{ fontSize: 10.5, color: T.ink3, marginTop: 2, fontVariantNumeric: 'tabular-nums' }}>
+          ≈ {fmtTWD(krwToTwd(e.krw))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Add Expense (新增消費)  — sheet-style
+// ─────────────────────────────────────────────────────────────
+function ScreenAddExpense({ onClose, onSave, editExpense, onDelete }) {
+  const [amount, setAmount] = useState(editExpense ? String(editExpense.krw) : '');
+  const [currency, setCurrency] = useState('KRW');
+  const [name, setName] = useState(editExpense?.item || '');
+  const [cat, setCat] = useState(editExpense?.cat || 'food');
+  const [payer, setPayer] = useState(editExpense?.payer || MEMBERS[0].id);
+  const [splitMode, setSplitMode] = useState('pick');
+  const [splitSet, setSplitSet] = useState(new Set(editExpense?.split || MEMBERS.map(m => m.id)));
+  const [selectedDayIdx, setSelectedDayIdx] = useState(editExpense?.day ?? TRIP.todayIndex);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [note, setNote] = useState(editExpense?.note || '');
+  const [confirmDel, setConfirmDel] = useState(false);
+
+  const numAmount = parseInt(amount || '0', 10);
+  const krw = currency === 'KRW' ? numAmount : numAmount * TRIP.rate.TWD_KRW;
+  const twd = currency === 'TWD' ? numAmount : numAmount / TRIP.rate.TWD_KRW;
+
+  const splitIds = splitMode === 'all'
+    ? MEMBERS.map(m => m.id)
+    : [...splitSet];
+  const perPerson = splitIds.length > 0 ? krw / splitIds.length : 0;
+
+  const toggleSplit = (id) => {
+    const ns = new Set(splitSet);
+    if (ns.has(id)) ns.delete(id); else ns.add(id);
+    setSplitSet(ns);
+  };
+
+  const save = () => {
+    onSave({
+      id:   editExpense?.id || 'e' + Date.now(),
+      day:  selectedDayIdx,
+      date: DAYS[selectedDayIdx].date,
+      item: name || '未命名消費',
+      cat, krw, payer,
+      split: splitIds,
+      note,
+    });
+  };
+
+  const presets = currency === 'KRW' ? [5000, 10000, 30000, 50000] : [200, 500, 1000, 2000];
+
+  return (
+    <div style={{
+      position: 'absolute', inset: 0, background: T.bg, zIndex: 50,
+      display: 'flex', flexDirection: 'column',
+      fontFamily: T.font, color: T.ink,
+    }}>
+      {/* sheet header */}
+      <div style={{
+        padding: 'calc(env(safe-area-inset-top, 0px) + 20px) 16px 12px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        background: T.bg,
+      }}>
+        <button onClick={onClose} style={{
+          border: '1px solid ' + T.divider, background: '#fff', cursor: 'pointer',
+          width: 38, height: 38, borderRadius: 12,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: T.shadowSoft,
+        }}>
+          <Icon name="close" size={20} color={T.ink2}/>
+        </button>
+        <div style={{ fontSize: 17, fontWeight: 700, color: T.ink, letterSpacing: -0.2 }}>
+          {editExpense ? '編輯消費' : '新增消費'}
+        </div>
+        <button onClick={save} disabled={!numAmount} style={{
+          border: 'none', background: numAmount ? T.primary : T.surfaceTint,
+          color: numAmount ? '#fff' : T.ink4, cursor: numAmount ? 'pointer' : 'default',
+          padding: '8px 16px', borderRadius: 20, fontFamily: T.font,
+          fontSize: 14, fontWeight: 700,
+        }}>儲存</button>
+      </div>
+
+      {/* scroll body */}
+      <div style={{
+        flex: 1, overflow: 'auto', padding: '4px 16px 24px',
+        display: 'flex', flexDirection: 'column', gap: 14,
+      }}>
+        {/* amount */}
+        <Card pad={20}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 14 }}>
+            <div style={{
+              display: 'inline-flex', padding: 3, borderRadius: 999,
+              background: T.bgSoft, border: '1px solid ' + T.divider,
+            }}>
+              {['KRW', 'TWD'].map(c => (
+                <button key={c} onClick={() => setCurrency(c)} style={{
+                  border: 'none', background: currency === c ? T.primary : 'transparent',
+                  color: currency === c ? '#fff' : T.ink3, cursor: 'pointer',
+                  padding: '7px 18px', borderRadius: 999, fontFamily: T.font,
+                  fontSize: 12, fontWeight: 700, letterSpacing: 0.5,
+                }}>{c === 'KRW' ? '韓元 ₩' : '台幣 NT$'}</button>
+              ))}
+            </div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 12, color: T.ink3, fontWeight: 600, letterSpacing: 1 }}>金額</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 6, marginTop: 6 }}>
+              <span style={{ fontSize: 22, fontWeight: 600, color: T.ink3 }}>
+                {currency === 'KRW' ? '₩' : 'NT$'}
+              </span>
+              <input
+                inputMode="numeric"
+                value={amount}
+                onChange={e => setAmount(e.target.value.replace(/[^\d]/g, ''))}
+                placeholder="0"
+                style={{
+                  border: 'none', outline: 'none', background: 'transparent',
+                  fontFamily: T.font, fontSize: 40, fontWeight: 700, color: T.ink,
+                  letterSpacing: -1, width: 200, textAlign: 'center',
+                }}
+              />
+            </div>
+            {numAmount > 0 && (
+              <div style={{ fontSize: 12, color: T.ink3, marginTop: 2 }}>
+                ≈ {currency === 'KRW' ? fmtTWD(twd) : fmtKRW(krw)}
+              </div>
+            )}
+          </div>
+          <div style={{ display: 'flex', gap: 6, marginTop: 16, justifyContent: 'center' }}>
+            {presets.map(p => (
+              <button key={p} onClick={() => setAmount(String(p))} style={{
+                border: '1px solid ' + T.divider, background: '#fff',
+                color: T.ink2, cursor: 'pointer', padding: '6px 12px',
+                borderRadius: 999, fontFamily: T.font, fontSize: 12, fontWeight: 600,
+              }}>+{p.toLocaleString()}</button>
+            ))}
+          </div>
+        </Card>
+
+        {/* name + date */}
+        <Card pad={0}>
+          <FieldRow label="消費名稱" icon="note">
+            <input
+              value={name} onChange={e => setName(e.target.value)}
+              placeholder="例：劉家辣炒年糕"
+              style={{
+                border: 'none', outline: 'none', background: 'transparent',
+                fontFamily: T.font, fontSize: 15, fontWeight: 600, color: T.ink,
+                width: '100%', textAlign: 'right',
+              }}
+            />
+          </FieldRow>
+          <Divider/>
+          <FieldRow label="日期" icon="today">
+            <button onClick={() => setShowDatePicker(true)} style={{
+              border: 'none', background: 'transparent', cursor: 'pointer',
+              fontFamily: T.font, fontSize: 14, fontWeight: 600, color: T.primary,
+              padding: 0,
+            }}>
+              {DAYS[selectedDayIdx].label}｜{DAYS[selectedDayIdx].date}
+            </button>
+          </FieldRow>
+        </Card>
+
+        {/* category */}
+        <Card pad={14}>
+          <FieldLabel>消費分類</FieldLabel>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 10 }}>
+            {CATS.map(c => {
+              const on = cat === c.id;
+              return (
+                <button key={c.id} onClick={() => setCat(c.id)} style={{
+                  border: on ? '2px solid ' + c.color : '1px solid ' + T.divider,
+                  background: on ? c.bg : '#fff', cursor: 'pointer',
+                  padding: '12px 8px', borderRadius: 14,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                }}>
+                  <Icon name={c.icon} size={22} color={c.color} strokeWidth={1.9}/>
+                  <span style={{ fontSize: 12, color: on ? c.color : T.ink2, fontWeight: 700 }}>
+                    {c.label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </Card>
+
+        {/* payer */}
+        <Card pad={14}>
+          <FieldLabel>付款人</FieldLabel>
+          <div style={{
+            display: 'flex', gap: 6, marginTop: 10,
+            overflowX: 'auto', scrollbarWidth: 'none',
+          }}>
+            {MEMBERS.map(m => {
+              const on = payer === m.id;
+              return (
+                <button key={m.id} onClick={() => setPayer(m.id)} style={{
+                  flexShrink: 0, border: 'none', background: 'transparent', cursor: 'pointer',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                  padding: 4,
+                }}>
+                  <div style={{
+                    padding: 3, borderRadius: '50%',
+                    background: on ? m.color : 'transparent',
+                  }}>
+                    <div style={{
+                      padding: on ? 2 : 0, borderRadius: '50%',
+                      background: on ? '#fff' : 'transparent',
+                    }}>
+                      <Avatar member={m} size={on ? 36 : 40}/>
+                    </div>
+                  </div>
+                  <span style={{
+                    fontSize: 11, fontWeight: on ? 700 : 500,
+                    color: on ? T.ink : T.ink3,
+                  }}>{m.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </Card>
+
+        {/* split */}
+        <Card pad={14}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <FieldLabel>分帳對象</FieldLabel>
+            <div style={{
+              display: 'inline-flex', padding: 2, borderRadius: 999,
+              background: T.bgSoft, border: '1px solid ' + T.divider,
+            }}>
+              {[{ id: 'all', l: '全部' }, { id: 'pick', l: '自選' }].map(o => (
+                <button key={o.id} onClick={() => setSplitMode(o.id)} style={{
+                  border: 'none', background: splitMode === o.id ? '#fff' : 'transparent',
+                  color: splitMode === o.id ? T.ink : T.ink3, cursor: 'pointer',
+                  padding: '4px 10px', borderRadius: 999,
+                  fontFamily: T.font, fontSize: 11, fontWeight: 600,
+                  boxShadow: splitMode === o.id ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
+                }}>{o.l}</button>
+              ))}
+            </div>
+          </div>
+          {splitMode === 'pick' ? (
+            <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
+              {MEMBERS.map(m => {
+                const on = splitSet.has(m.id);
+                return (
+                  <button key={m.id} onClick={() => toggleSplit(m.id)} style={{
+                    border: 'none', background: on ? m.color + '22' : T.bgSoft,
+                    cursor: 'pointer', padding: '6px 10px 6px 6px',
+                    borderRadius: 999, display: 'flex', alignItems: 'center', gap: 6,
+                    fontFamily: T.font, fontSize: 13, fontWeight: 600,
+                    color: on ? T.ink : T.ink3,
+                  }}>
+                    <Avatar member={m} size={22}/>
+                    <span>{m.name}</span>
+                    {on && <Icon name="check" size={14} color={m.color} strokeWidth={2.5}/>}
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', marginTop: 12, alignItems: 'center' }}>
+              <AvatarStack ids={MEMBERS.map(m => m.id)} size={28}/>
+              <span style={{ fontSize: 12, color: T.ink3, marginLeft: 8 }}>
+                全員 {MEMBERS.length} 人平分
+              </span>
+            </div>
+          )}
+          {numAmount > 0 && splitIds.length > 0 && (
+            <div style={{
+              marginTop: 14, padding: '10px 12px', borderRadius: 12,
+              background: T.primarySoft, display: 'flex', justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+              <span style={{ fontSize: 12, color: T.primary, fontWeight: 600 }}>每人分擔</span>
+              <span style={{ fontSize: 14, fontWeight: 700, color: T.primary }}>
+                {fmtKRW(Math.round(perPerson))} · ≈ {fmtTWD(krwToTwd(perPerson))}
+              </span>
+            </div>
+          )}
+        </Card>
+
+        {/* note */}
+        <Card pad={0}>
+          <FieldRow label="備註" icon="note" align="top">
+            <textarea
+              value={note} onChange={e => setNote(e.target.value)}
+              placeholder="選填，例如：好吃 / 弟弟想再吃一次"
+              rows={2}
+              style={{
+                border: 'none', outline: 'none', background: 'transparent',
+                fontFamily: T.font, fontSize: 14, color: T.ink,
+                width: '100%', resize: 'none', textAlign: 'right',
+              }}
+            />
+          </FieldRow>
+        </Card>
+
+        {/* 刪除此消費 — 只在編輯模式顯示 */}
+        {editExpense && onDelete && !confirmDel && (
+          <button onClick={() => setConfirmDel(true)} style={{
+            width: '100%', padding: 14, borderRadius: 20, border: 'none',
+            background: T.roseSoft, cursor: 'pointer',
+            fontSize: 14, fontWeight: 600, color: T.rose, fontFamily: T.font,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+          }}>
+            <Icon name="trash" size={16} color={T.rose} strokeWidth={2}/>
+            刪除此消費
+          </button>
+        )}
+
+        {editExpense && confirmDel && (
+          <div style={{ background: T.roseSoft, borderRadius: 18, padding: 16 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: T.ink, textAlign: 'center', marginBottom: 12 }}>
+              確定要刪除這筆消費嗎？
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button onClick={() => setConfirmDel(false)} style={{
+                flex: 1, padding: '11px 0', borderRadius: 16,
+                border: '1px solid ' + T.divider, background: '#fff',
+                fontSize: 14, fontWeight: 600, color: T.ink, cursor: 'pointer', fontFamily: T.font,
+              }}>取消</button>
+              <button onClick={() => onDelete(editExpense.id)} style={{
+                flex: 1, padding: '11px 0', borderRadius: 16,
+                border: 'none', background: T.rose,
+                fontSize: 14, fontWeight: 700, color: '#fff', cursor: 'pointer', fontFamily: T.font,
+              }}>確認刪除</button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Date picker bottom sheet */}
+      {showDatePicker && (
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'rgba(0,0,0,0.35)', zIndex: 100,
+          display: 'flex', alignItems: 'flex-end',
+        }} onClick={() => setShowDatePicker(false)}>
+          <div style={{
+            width: '100%', background: '#fff',
+            borderRadius: '24px 24px 0 0',
+            padding: '20px 16px 52px', boxSizing: 'border-box',
+          }} onClick={e => e.stopPropagation()}>
+            <div style={{
+              width: 36, height: 4, borderRadius: 2,
+              background: T.divider, margin: '0 auto 16px',
+            }}/>
+            <div style={{
+              fontSize: 15, fontWeight: 700, color: T.ink,
+              marginBottom: 14, textAlign: 'center',
+            }}>選擇消費日期</div>
+            {DAYS.map(d => (
+              <button key={d.idx}
+                onClick={() => { setSelectedDayIdx(d.idx); setShowDatePicker(false); }}
+                style={{
+                  width: '100%', padding: '14px 20px',
+                  border: 'none',
+                  background: selectedDayIdx === d.idx ? T.primarySoft : 'transparent',
+                  cursor: 'pointer', borderRadius: 14, marginBottom: 4,
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  fontFamily: T.font, boxSizing: 'border-box',
+                }}>
+                <span style={{
+                  fontSize: 15, fontWeight: 700,
+                  color: selectedDayIdx === d.idx ? T.primary : T.ink,
+                }}>
+                  {d.label}
+                </span>
+                <span style={{ fontSize: 14, color: T.ink3 }}>
+                  {d.dow}　{d.date}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FieldLabel({ children }) {
+  return (
+    <div style={{ fontSize: 12, color: T.ink3, fontWeight: 700, letterSpacing: 0.5 }}>
+      {children}
+    </div>
+  );
+}
+
+function FieldRow({ label, icon, children, align = 'center' }) {
+  return (
+    <div style={{
+      display: 'flex', alignItems: align === 'top' ? 'flex-start' : 'center',
+      gap: 10, padding: '14px 16px',
+    }}>
+      <Icon name={icon} size={18} color={T.ink3}/>
+      <span style={{ fontSize: 13, color: T.ink2, fontWeight: 600, flexShrink: 0 }}>
+        {label}
+      </span>
+      <div style={{ flex: 1, minWidth: 0 }}>{children}</div>
+    </div>
+  );
+}
+
+function Divider() {
+  return <div style={{ height: 1, background: T.divider, marginLeft: 44 }}/>;
+}
+
+// ─────────────────────────────────────────────────────────────
+// BudgetForm 子元件（模組級，避免 input 每次 re-render 失焦）
+// ─────────────────────────────────────────────────────────────
+function BRow({ label, icon, children }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 16px' }}>
+      <Icon name={icon} size={18} color={T.ink3}/>
+      <span style={{ fontSize: 13, color: T.ink2, fontWeight: 600, flexShrink: 0, minWidth: 80 }}>
+        {label}
+      </span>
+      <div style={{ flex: 1, minWidth: 0 }}>{children}</div>
+    </div>
+  );
+}
+function BDivider() {
+  return <div style={{ height: 1, background: T.divider, marginLeft: 44 }}/>;
+}
+
+// ─────────────────────────────────────────────────────────────
+// BudgetForm — 修改個人預算 overlay（單一成員）
+// ─────────────────────────────────────────────────────────────
+function BudgetForm({ memberId, memberBudget, expenses, onClose, onSave }) {
+  const member = MEMBERS.find(m => m.id === memberId);
+  // 本地 state：只在按「儲存」時才更新全域，避免 onChange 觸發重新掛載導致鍵盤消失
+  const [budgetInput, setBudgetInput] = useState(String(memberBudget || 50000));
+
+  const budgetNum = parseInt(budgetInput) || 0;
+  const spentTWD  = krwToTwd(calcMemberShare(memberId, expenses || []));
+  const remaining = budgetNum - spentTWD;
+
+  const inputStyle = {
+    border: 'none', outline: 'none', background: 'transparent',
+    fontFamily: T.font, fontSize: 15, fontWeight: 700, color: T.ink,
+    textAlign: 'right', width: 100,
+    MozAppearance: 'textfield',
+  };
+
+  return (
+    <div style={{
+      position: 'absolute', inset: 0, background: T.bg, zIndex: 50,
+      display: 'flex', flexDirection: 'column',
+      fontFamily: T.font, color: T.ink,
+    }}>
+      {/* header */}
+      <div style={{
+        padding: 'calc(env(safe-area-inset-top, 0px) + 20px) 16px 12px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        background: T.bg,
+      }}>
+        <button onClick={onClose} style={{
+          border: '1px solid ' + T.divider, background: '#fff', cursor: 'pointer',
+          width: 38, height: 38, borderRadius: 12,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: T.shadowSoft,
+        }}>
+          <Icon name="close" size={20} color={T.ink2}/>
+        </button>
+        <div style={{ fontSize: 17, fontWeight: 700, color: T.ink, letterSpacing: -0.2 }}>
+          修改個人預算
+        </div>
+        <button onClick={() => onSave(memberId, budgetNum || 50000)} style={{
+          border: 'none', background: T.primary, color: '#fff',
+          cursor: 'pointer', padding: '8px 16px', borderRadius: 20,
+          fontFamily: T.font, fontSize: 14, fontWeight: 700,
+        }}>儲存</button>
+      </div>
+
+      {/* body */}
+      <div style={{
+        flex: 1, overflow: 'auto', padding: '4px 16px 40px',
+        display: 'flex', flexDirection: 'column', gap: 14,
+      }}>
+        <div style={{ background: '#fff', borderRadius: 18, overflow: 'hidden', boxShadow: T.shadowCard }}>
+          {/* 成員（唯讀） */}
+          <BRow label="成員" icon="person">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-end' }}>
+              {member && <Avatar member={member} size={22}/>}
+              <span style={{ fontamily: T.font, fontSize: 15, fontWeight: 700, color: T.ink }}>
+                {member ? member.name : ''}
+              </span>
+            </div>
+          </BRow>
+          <BDivider/>
+          {/* 個人預算（可編輯）— onChange 只更新本地 state，不觸發全域 */}
+          <BRow label="個人預算" icon="chart">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'flex-end' }}>
+              <span style={{ fontSize: 13, color: T.ink3, fontWeight: 600 }}>NT$</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                value={budgetInput}
+                onChange={e => setBudgetInput(e.target.value)}
+                placeholder="50000"
+                style={inputStyle}
+              />
+            </div>
+          </BRow>
+          <BDivider/>
+          {/* 個人旅程總金額（唯讀） */}
+          <BRow label="個人旅程總金額" icon="wallet">
+            <div style={{
+              textAlign: 'right', fontSize: 15, fontWeight: 700, color: T.ink2,
+              fontVariantNumeric: 'tabular-nums',
+            }}>
+              {fmtTWD(spentTWD)}
+            </div>
+          </BRow>
+          <BDivider/>
+          {/* 剩餘預算（自動計算） */}
+          <BRow label="剩餘預算" icon="bookmark">
+            <div style={{
+              textAlign: 'right', fontSize: 15, fontWeight: 700,
+              color: remaining >= 0 ? T.primary : T.rose,
+              fontVariantNumeric: 'tabular-nums',
+            }}>
+              {fmtTWD(remaining)}
+            </div>
+          </BRow>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ═══ screen-split.jsx ═══
+// screen-split.jsx — 分帳結算頁（overlay style）
+
+// ─────────────────────────────────────────────────────────────
+// 結算計算邏輯
+// ─────────────────────────────────────────────────────────────
+function computeSettlement(expenses) {
+  // shareKRW[id] = 此人應分攤（KRW）
+  // paidKRW[id]  = 此人實際付款（KRW）
+  const shareKRW = {}, paidKRW = {};
+  MEMBERS.forEach(m => { shareKRW[m.id] = 0; paidKRW[m.id] = 0; });
+
+  expenses.forEach(e => {
+    if (paidKRW[e.payer] !== undefined) paidKRW[e.payer] += e.krw;
+    const per = e.krw / e.split.length;
+    e.split.forEach(id => {
+      if (shareKRW[id] !== undefined) shareKRW[id] += per;
+    });
+  });
+
+  // net[id] > 0 → 此人需要付出更多（owe）
+  // net[id] < 0 → 此人應收回錢（credit）
+  const netKRW = {};
+  MEMBERS.forEach(m => { netKRW[m.id] = shareKRW[m.id] - paidKRW[m.id]; });
+
+  // 最小化交易的貪婪演算法
+  const debtors   = MEMBERS.filter(m => netKRW[m.id] >  0.5).map(m => ({ id: m.id, name: m.name, amt: netKRW[m.id] }));
+  const creditors = MEMBERS.filter(m => netKRW[m.id] < -0.5).map(m => ({ id: m.id, name: m.name, amt: -netKRW[m.id] }));
+  debtors.sort((a, b) => b.amt - a.amt);
+  creditors.sort((a, b) => b.amt - a.amt);
+
+  const d = debtors.map(x => ({ ...x }));
+  const c = creditors.map(x => ({ ...x }));
+  const transactions = [];
+  let i = 0, j = 0;
+  while (i < d.length && j < c.length) {
+    const amount = Math.min(d[i].amt, c[j].amt);
+    if (amount > 0.5) {
+      transactions.push({ from: d[i].id, to: c[j].id, krw: Math.round(amount) });
+    }
+    d[i].amt -= amount;
+    c[j].amt -= amount;
+    if (d[i].amt < 0.5) i++;
+    if (c[j].amt < 0.5) j++;
+  }
+
+  return { shareKRW, paidKRW, netKRW, transactions };
+}
+
+// ─────────────────────────────────────────────────────────────
+// ScreenSplit
+// ─────────────────────────────────────────────────────────────
+function ScreenSplit({ expenses, onClose }) {
+  const { shareKRW, paidKRW, netKRW, transactions } = React.useMemo(
+    () => computeSettlement(expenses),
+    [expenses]
+  );
+
+  return (
+    <div style={{
+      position: 'absolute', inset: 0, background: T.bg, zIndex: 50,
+      display: 'flex', flexDirection: 'column',
+      fontFamily: T.font, color: T.ink,
+    }}>
+      {/* header */}
+      <div style={{
+        padding: '60px 16px 12px',
+        display: 'flex', alignItems: 'center', gap: 12,
+        background: T.bg,
+      }}>
+        <button onClick={onClose} style={{
+          border: '1px solid ' + T.divider, background: '#fff', cursor: 'pointer',
+          width: 38, height: 38, borderRadius: 12,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: T.shadowSoft, flexShrink: 0,
+        }}>
+          <Icon name="chevL" size={20} color={T.ink2}/>
+        </button>
+        <div>
+          <div style={{ fontSize: 12, color: T.ink3, letterSpacing: 1, fontWeight: 500 }}>SPLIT</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: T.ink, letterSpacing: -0.2 }}>分帳結算</div>
+        </div>
+      </div>
+
+      {/* scroll body */}
+      <div style={{ flex: 1, overflow: 'auto', padding: '4px 16px 32px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+        {/* ── 每人明細表 ── */}
+        <Card pad={0}>
+          {/* 表頭 */}
+          <div style={{
+            display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr',
+            padding: '10px 14px 8px',
+            borderBottom: '1px solid ' + T.divider,
+          }}>
+            {['成員', '已付款', '應分攤', '應付/收'].map(h => (
+              <div key={h} style={{
+                fontSize: 11, color: T.ink3, fontWeight: 700,
+                letterSpacing: 0.4, textAlign: h === '成員' ? 'left' : 'right',
+              }}>{h}</div>
+            ))}
+          </div>
+
+          {MEMBERS.map((m, i) => {
+            const paid  = paidKRW[m.id];
+            const share = shareKRW[m.id];
+            const net   = netKRW[m.id];   // positive = owes, negative = receives
+            const isLast = i === MEMBERS.length - 1;
+            return (
+              <div key={m.id} style={{
+                display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr',
+                padding: '12px 14px',
+                borderBottom: isLast ? 'none' : '1px solid ' + T.divider,
+                alignItems: 'center',
+              }}>
+                {/* 成員 */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                  <Avatar member={m} size={24}/>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: T.ink }}>{m.name}</span>
+                </div>
+                {/* 已付款 */}
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: T.ink, fontVariantNumeric: 'tabular-nums' }}>
+                    {fmtTWD(krwToTwd(paid))}
+                  </div>
+                  <div style={{ fontSize: 10, color: T.ink4, fontVariantNumeric: 'tabular-nums' }}>
+                    {fmtKRW(Math.round(paid))}
+                  </div>
+                </div>
+                {/* 應分攤 */}
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: T.ink, fontVariantNumeric: 'tabular-nums' }}>
+                    {fmtTWD(krwToTwd(share))}
+                  </div>
+                  <div style={{ fontSize: 10, color: T.ink4, fontVariantNumeric: 'tabular-nums' }}>
+                    {fmtKRW(Math.round(share))}
+                  </div>
+                </div>
+                {/* 應付/應收 */}
+                <div style={{ textAlign: 'right' }}>
+                  {Math.abs(net) < 1 ? (
+                    <span style={{ fontSize: 12, color: T.green, fontWeight: 700 }}>✓ 平</span>
+                  ) : net > 0 ? (
+                    <div>
+                      <div style={{ fontSize: 11, color: T.rose, fontWeight: 700 }}>應付</div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: T.rose, fontVariantNumeric: 'tabular-nums' }}>
+                        {fmtTWD(krwToTwd(net))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <div style={{ fontSize: 11, color: T.green, fontWeight: 700 }}>應收</div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: T.green, fontVariantNumeric: 'tabular-nums' }}>
+                        {fmtTWD(krwToTwd(-net))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </Card>
+
+        {/* ── 結算清單：誰要付給誰 ── */}
+        <div style={{ padding: '0 2px' }}>
+          <div style={{ fontSize: 13, color: T.ink3, fontWeight: 600, letterSpacing: 0.6, marginBottom: 10 }}>
+            轉帳清單
+          </div>
+          {transactions.length === 0 ? (
+            <Card pad={20} style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 13, color: T.green, fontWeight: 600 }}>🎉 大家都平了，不用轉帳！</div>
+            </Card>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {transactions.map((tx, idx) => {
+                const fromM = MEMBERS.find(m => m.id === tx.from);
+                const toM   = MEMBERS.find(m => m.id === tx.to);
+                return (
+                  <Card key={idx} pad={14}>
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: 10,
+                    }}>
+                      {/* 付款方 */}
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: 1 }}>
+                        <Avatar member={fromM} size={36}/>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: T.ink }}>{fromM.name}</span>
+                        <span style={{ fontSize: 10, color: T.rose, fontWeight: 600 }}>付款方</span>
+                      </div>
+
+                      {/* 箭頭 + 金額 */}
+                      <div style={{ flex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                        <div style={{
+                          fontSize: 14, fontWeight: 700, color: T.ink,
+                          fontVariantNumeric: 'tabular-nums',
+                        }}>{fmtTWD(krwToTwd(tx.krw))}</div>
+                        <div style={{
+                          display: 'flex', alignItems: 'center', gap: 4,
+                          padding: '6px 14px', borderRadius: 999,
+                          background: T.primarySoft,
+                        }}>
+                          <Icon name="arrowR" size={16} color={T.primary} strokeWidth={2}/>
+                        </div>
+                        <div style={{ fontSize: 10, color: T.ink3, fontVariantNumeric: 'tabular-nums' }}>
+                          ≈ {fmtKRW(tx.krw)}
+                        </div>
+                      </div>
+
+                      {/* 收款方 */}
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: 1 }}>
+                        <Avatar member={toM} size={36}/>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: T.ink }}>{toM.name}</span>
+                        <span style={{ fontSize: 10, color: T.green, fontWeight: 600 }}>收款方</span>
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* ── 說明 ── */}
+        <div style={{
+          padding: '10px 14px', borderRadius: 14,
+          background: T.bgSoft, border: '1px solid ' + T.divider,
+        }}>
+          <div style={{ fontSize: 11, color: T.ink3, lineHeight: 1.6 }}>
+            <strong style={{ color: T.ink2 }}>付款人</strong>：實際刷卡或付現的人<br/>
+            <strong style={{ color: T.ink2 }}>應分攤</strong>：此人實際需負擔的費用<br/>
+            <strong style={{ color: T.ink2 }}>轉帳清單</strong>：已最佳化，用最少筆數完成結算
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ═══ app.jsx ═══
+// app.jsx — main App: state, navigation, Firestore sync
+
+// ─── date helpers ───────────────────────────────────────────
+function getCurrentDateLabel() {
+  const now = new Date();
+  const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+  const yyyy = now.getFullYear();
+  const mm   = String(now.getMonth() + 1).padStart(2, '0');
+  const dd   = String(now.getDate()).padStart(2, '0');
+  return `${yyyy} / ${mm} / ${dd}・週${weekdays[now.getDay()]}`;
+}
+function getCurrentWeekday() {
+  return ['日', '一', '二', '三', '四', '五', '六'][new Date().getDay()];
+}
+
+// ─── localStorage helpers ───────────────────────────────────
+function lsGet(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (raw !== null) return JSON.parse(raw);
+  } catch(e) {}
+  return fallback;
+}
+function lsSet(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch(e) {}
+}
+
+// ─── Firestore helpers ──────────────────────────────────────
+// Firestore stores object keys as strings; convert back to numbers for dayIdx
+function normalizeItinItems(raw) {
+  if (!raw || typeof raw !== 'object') return {};
+  const result = {};
+  Object.keys(raw).forEach(k => { result[Number(k)] = raw[k]; });
+  return result;
+}
+
+// Write a partial update to the trip document (merge mode)
+function writeToFirestore(updates) {
+  try {
+    const sync = window.FirebaseSync;
+    if (!sync || !sync.ready) return;
+    sync.setDoc(sync.tripRef(), updates, { merge: true })
+      .catch(e => console.warn('[FS write]', e));
+  } catch(e) { console.warn('[FS]', e); }
+}
+
+function App() {
+  const [tab, setTab] = useState(() => {
+    const saved = lsGet('familyTrip_activeTab', 'home');
+    return ['home','today','itinerary','expense','stay'].includes(saved) ? saved : 'home';
+  });
+  const [showAdd,      setShowAdd]      = useState(false);
+  const [showSplit,    setShowSplit]    = useState(false);
+  const [showItinForm, setShowItinForm] = useState(false);
+  const [editExpense,  setEditExpense]  = useState(null);
+  const [editItinItem, setEditItinItem] = useState(null);
+  const [editItinDay,  setEditItinDay]  = useState(null);
+  const [itineraryDay, setItineraryDay] = useState(TRIP.todayIndex);
+
+  // ── expenses — localStorage persisted ──────────────────────
+  const [expenses, setExpenses] = useState(() =>
+    lsGet('familyTrip_expenses', EXPENSES_INIT)
+  );
+  useEffect(() => { lsSet('familyTrip_expenses', expenses); }, [expenses]);
+
+  // ── 保存目前頁面 ─────────────────────────────────────────
+  useEffect(() => { lsSet('familyTrip_activeTab', tab); }, [tab]);
+
+  // ── per-member budgets — localStorage persisted ─────────────
+  const [memberBudgets, setMemberBudgets] = useState(() => {
+    const defaults = {};
+    MEMBERS.forEach(m => { defaults[m.id] = 50000; });
+    return lsGet('familyTrip_memberBudgets', defaults);
+  });
+  useEffect(() => { lsSet('familyTrip_memberBudgets', memberBudgets); }, [memberBudgets]);
+
+  // ── stays — localStorage persisted ─────────────────────────
+  const [stays, setStays] = useState(() =>
+    lsGet('familyTrip_stays', STAYS.map(s => ({ ...s })))
+  );
+  useEffect(() => { lsSet('familyTrip_stays', stays); }, [stays]);
+
+  // ── itinerary items — localStorage persisted ───────────────
+  const [allItinItems, setAllItinItems] = useState(() => {
+    const fallback = {};
+    DAYS.forEach(d => { fallback[d.idx] = d.items.map(it => ({ ...it })); });
+    return lsGet('familyTrip_itineraryItems', fallback);
+  });
+  useEffect(() => { lsSet('familyTrip_itineraryItems', allItinItems); }, [allItinItems]);
+
+  // ── Firestore real-time sync ────────────────────────────────
+  const fsReadyRef = useRef(false);
+  const fsUnsubRef = useRef(null);
+
+  useEffect(() => {
+    const startSync = () => {
+      try {
+        const sync = window.FirebaseSync;
+        if (!sync || !sync.ready) return;
+
+        const tripRef = sync.tripRef();
+
+        fsUnsubRef.current = sync.onSnapshot(tripRef, (snap) => {
+          // Document does not exist yet: seed Firestore from localStorage
+          if (!snap.exists()) {
+            const fallbackItin = {};
+            DAYS.forEach(d => { fallbackItin[d.idx] = d.items.map(it => ({ ...it })); });
+            const memberDefaults = {};
+            MEMBERS.forEach(m => { memberDefaults[m.id] = 50000; });
+            const initData = {
+              expenses:       lsGet('familyTrip_expenses',       EXPENSES_INIT),
+              itineraryItems: lsGet('familyTrip_itineraryItems', fallbackItin),
+              stays:          lsGet('familyTrip_stays',          STAYS.map(s => ({ ...s }))),
+              memberBudgets:  lsGet('familyTrip_memberBudgets',  memberDefaults),
+            };
+            sync.setDoc(tripRef, initData).catch(e => console.warn('[FS seed]', e));
+            fsReadyRef.current = true;
+            console.info('[FS] 首次初始化，已將本地資料寫入 Firestore');
+            return;
+          }
+
+          const data = snap.data();
+
+          // First snapshot with existing data: replace local state with Firestore data
+          if (!fsReadyRef.current) {
+            fsReadyRef.current = true;
+            if (data.expenses)       setExpenses(data.expenses);
+            if (data.itineraryItems) setAllItinItems(normalizeItinItems(data.itineraryItems));
+            if (data.stays)          setStays(data.stays);
+            if (data.memberBudgets)  setMemberBudgets(data.memberBudgets);
+            console.info('[FS] 從 Firestore 載入資料完成');
+            return;
+          }
+
+          // Real-time update from another device (skip our own pending writes)
+          if (!snap.metadata.hasPendingWrites) {
+            if (data.expenses)       setExpenses(data.expenses);
+            if (data.itineraryItems) setAllItinItems(normalizeItinItems(data.itineraryItems));
+            if (data.stays)          setStays(data.stays);
+            if (data.memberBudgets)  setMemberBudgets(data.memberBudgets);
+          }
+        }, err => console.warn('[FS snapshot error]', err));
+
+      } catch(e) { console.warn('[FS startSync]', e); }
+    };
+
+    if (window.FirebaseSync && window.FirebaseSync.ready) {
+      startSync();
+    } else {
+      window.addEventListener('firebase-ready', startSync, { once: true });
+    }
+
+    return () => { if (fsUnsubRef.current) fsUnsubRef.current(); };
+  }, []);
+
+  // ── budget form ─────────────────────────────────────────────
+  const [showBudgetForm,     setShowBudgetForm]     = useState(false);
+  const [editBudgetMemberId, setEditBudgetMemberId] = useState(null);
+
+  const handleEditBudget = (memberId) => {
+    setEditBudgetMemberId(memberId);
+    setShowBudgetForm(true);
+  };
+  const handleSaveMemberBudget = (memberId, amount) => {
+    setMemberBudgets(prev => {
+      const next = { ...prev, [memberId]: amount };
+      writeToFirestore({ memberBudgets: next });
+      return next;
+    });
+    setShowBudgetForm(false);
+    setEditBudgetMemberId(null);
+  };
+
+  // ── stay handlers ───────────────────────────────────────────
+  const [showStayForm, setShowStayForm] = useState(false);
+  const [editStay,     setEditStay]     = useState(null);
+
+  const handleEditStay   = (stay) => { setEditStay(stay); setShowStayForm(true); };
+  const handleSaveStay   = (newS) => {
+    setStays(prev => {
+      const next = editStay
+        ? prev.map(s => s.id === newS.id ? newS : s)
+        : [...prev, newS];
+      writeToFirestore({ stays: next });
+      return next;
+    });
+    setEditStay(null);
+    setShowStayForm(false);
+  };
+  const handleDeleteStay = (id) => {
+    setStays(prev => {
+      const next = prev.filter(s => s.id !== id);
+      writeToFirestore({ stays: next });
+      return next;
+    });
+    setEditStay(null);
+    setShowStayForm(false);
+  };
+
+  // ── itinerary handlers ──────────────────────────────────────
+  const handleSaveItinItem = (item, dayIdx) => {
+    setAllItinItems(prev => {
+      const list = [...(prev[dayIdx] || [])];
+      const idx  = list.findIndex(x => x.id === item.id);
+      if (idx >= 0) list[idx] = item;
+      else { list.push(item); list.sort((a, b) => a.time.localeCompare(b.time)); }
+      const next = { ...prev, [dayIdx]: list };
+      writeToFirestore({ itineraryItems: next });
+      return next;
+    });
+  };
+
+  const handleDeleteItinItem = (itemId, dayIdx) => {
+    setAllItinItems(prev => {
+      const next = { ...prev, [dayIdx]: (prev[dayIdx] || []).filter(x => x.id !== itemId) };
+      writeToFirestore({ itineraryItems: next });
+      return next;
+    });
+  };
+
+  const handleOpenItinForm = (item, dayIdx) => {
+    setEditItinItem(item || null);
+    setEditItinDay(dayIdx ?? TRIP.todayIndex);
+    setShowItinForm(true);
+  };
+
+  const scrollRef = useRef(null);
+
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
+  }, [tab]);
+
+  const handleNav = (id) => {
+    if (['home','today','itinerary','expense','stay'].includes(id)) {
+      setTab(id);
+    } else {
+      if (id === 'sub-budget' || id === 'sub-split') setTab('expense');
+      else if (['sub-tx','sub-mem','sub-saved','sub-set'].includes(id)) setTab('itinerary');
+    }
+  };
+
+  const handleEditExpense = (e) => { setEditExpense(e); setShowAdd(true); };
+
+  const handleAddExpense = (newE) => {
+    setExpenses(prev => {
+      const next = editExpense
+        ? prev.map(e => e.id === newE.id ? newE : e)
+        : [...prev, newE];
+      writeToFirestore({ expenses: next });
+      return next;
+    });
+    setEditExpense(null);
+    setShowAdd(false);
+    setTab('expense');
+  };
+
+  const handleDeleteExpense = (id) => {
+    setExpenses(prev => {
+      const next = prev.filter(e => e.id !== id);
+      writeToFirestore({ expenses: next });
+      return next;
+    });
+    setEditExpense(null);
+    setShowAdd(false);
+    setTab('expense');
+  };
+
+  // top bar config per tab
+const topBarFor = (t) => ({
+    home:      { sub: getCurrentDateLabel(), title: `哈囉，週${getCurrentWeekday()}早安 👋` },
+    today:     { sub: 'TODAY',               title: '今日行程' },
+    itinerary: { sub: 'ITINERARY',           title: '行程總覽' },
+    expense:   { sub: 'EXPENSE',             title: '消費記錄' },
+    stay:      { sub: 'STAY',                title: '住宿資訊' },
+  }[t]);
+
+  const tb = topBarFor(tab);
+
+  let content;
+  if (tab === 'home') {
+    content = <ScreenDashboard
+      expenses={expenses} memberBudgets={memberBudgets}
+      onNav={handleNav} onAddExpense={() => setShowAdd(true)}
+      todayItems={allItinItems[TRIP.todayIndex] || []}
+    />;
+  } else if (tab === 'today') {
+    content = <ScreenToday expenses={expenses} todayItems={allItinItems[TRIP.todayIndex] || []}/>;
+  } else if (tab === 'itinerary') {
+    content = <ScreenItinerary
+      initialDay={itineraryDay}
+      allItemsExt={allItinItems}
+      onSaveItemExt={handleSaveItinItem}
+      onDeleteItemExt={handleDeleteItinItem}
+      onOpenEditForm={handleOpenItinForm}
+    />;
+  } else if (tab === 'expense') {
+    content = <ScreenExpense
+      expenses={expenses}
+      memberBudgets={memberBudgets}
+      onAddExpense={() => setShowAdd(true)}
+      onViewSplit={() => setShowSplit(true)}
+      onEditExpense={handleEditExpense}
+      onEditBudget={handleEditBudget}
+    />;
+  } else if (tab === 'stay') {
+    content = <ScreenStay stays={stays} onEditStay={handleEditStay} onDeleteStay={handleDeleteStay}/>;
+  }
+
+  const showFab        = tab === 'itinerary' || tab === 'expense' || tab === 'stay';
+  const fabIsItinerary = tab === 'itinerary';
+  const fabIsStay      = tab === 'stay';
+
+  return (
+    <div style={{
+      position: 'fixed', top: 0, bottom: 0, left: 0, right: 0,
+      maxWidth: 430, margin: '0 auto',
+      background: T.bg, fontFamily: T.font,
+      overflow: 'hidden',
+    }}>
+      <TopBar title={tb.title} sub={tb.sub}/>
+
+      <AppShell scrollRef={scrollRef}>
+        {content}
+      </AppShell>
+
+      {showFab && !showAdd && !showItinForm && !showStayForm && !showBudgetForm && (
+        <FAB
+          onClick={() => fabIsItinerary ? handleOpenItinForm(null, itineraryDay) : fabIsStay ? setShowStayForm(true) : setShowAdd(true)}
+          label={fabIsItinerary ? '新增行程' : fabIsStay ? '新增住宿' : '新增消費'}
+        />
+      )}
+
+      {!showAdd && !showItinForm && !showStayForm && !showBudgetForm && (
+        <BottomNav active={tab} onChange={handleNav}/>
+      )}
+
+      {showAdd && (
+        <ScreenAddExpense
+          onClose={() => { setShowAdd(false); setEditExpense(null); }}
+          onSave={handleAddExpense}
+          onDelete={handleDeleteExpense}
+          editExpense={editExpense}
+        />
+      )}
+
+      {showItinForm && (
+        <ItineraryForm
+          item={editItinItem}
+          dayIdx={editItinDay ?? (tab === 'itinerary' ? itineraryDay : TRIP.todayIndex)}
+          onSave={(item) => {
+            const targetDay = item.dayIdx ?? editItinDay ?? (tab === 'itinerary' ? itineraryDay : TRIP.todayIndex);
+            const oldDay    = editItinItem ? (editItinItem.dayIdx ?? editItinDay ?? targetDay) : targetDay;
+            if (editItinItem && oldDay !== targetDay) {
+              handleDeleteItinItem(editItinItem.id, oldDay);
+            }
+            handleSaveItinItem(item, targetDay);
+            setShowItinForm(false);
+            setEditItinItem(null);
+            setEditItinDay(null);
+          }}
+          onDelete={editItinItem ? () => {
+            const oldDay = editItinItem.dayIdx ?? editItinDay ?? (tab === 'itinerary' ? itineraryDay : TRIP.todayIndex);
+            handleDeleteItinItem(editItinItem.id, oldDay);
+            setShowItinForm(false);
+            setEditItinItem(null);
+            setEditItinDay(null);
+          } : null}
+          onClose={() => {
+            setShowItinForm(false);
+            setEditItinItem(null);
+            setEditItinDay(null);
+          }}
+        />
+      )}
+
+      {showBudgetForm && editBudgetMemberId && (
+        <BudgetForm
+          memberId={editBudgetMemberId}
+          memberBudget={memberBudgets[editBudgetMemberId] || 50000}
+          expenses={expenses}
+          onClose={() => { setShowBudgetForm(false); setEditBudgetMemberId(null); }}
+          onSave={handleSaveMemberBudget}
+        />
+      )}
+
+      {showStayForm && (
+        <StayForm
+          stay={editStay}
+          onClose={() => { setShowStayForm(false); setEditStay(null); }}
+          onSave={handleSaveStay}
+          onDelete={editStay ? handleDeleteStay : null}
+        />
+      )}
+
+      {showSplit && (
+        <ScreenSplit expenses={expenses} e={() => setShowSplit(false)}/>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
