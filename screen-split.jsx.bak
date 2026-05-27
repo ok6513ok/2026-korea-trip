@@ -11,19 +11,10 @@ function computeSettlement(expenses) {
 
   expenses.forEach(e => {
     if (paidKRW[e.payer] !== undefined) paidKRW[e.payer] += e.krw;
-    const mode = e.splitMode || 'equal';
-    if (mode === 'custom' && e.customSplits) {
-      e.split.forEach(id => {
-        if (shareKRW[id] !== undefined) {
-          shareKRW[id] += Number(e.customSplits[id] || 0);
-        }
-      });
-    } else {
-      const per = e.krw / e.split.length;
-      e.split.forEach(id => {
-        if (shareKRW[id] !== undefined) shareKRW[id] += per;
-      });
-    }
+    const per = e.krw / e.split.length;
+    e.split.forEach(id => {
+      if (shareKRW[id] !== undefined) shareKRW[id] += per;
+    });
   });
 
   // net[id] > 0 → 此人需要付出更多（owe）
