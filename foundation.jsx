@@ -96,7 +96,7 @@ const MEMBERS = [
   { id: 'yating',    name: '雅婷', color: '#9B7AB8', short: '婷', budgetTWD: 60000 },
   { id: 'yiru',      name: '苡如', color: '#5A8F6E', short: '如', budgetTWD: 60000 },
   { id: 'chenyu',    name: '承毓', color: '#D49152', short: '毓', budgetTWD: 60000 },
-  { id: 'hongsheng', name: '弘昇', color: '#7A9BC9', short: '昇', budgetTWD: 60000 },
+  { id: 'hongsheng', name: '宏昇', color: '#7A9BC9', short: '昇', budgetTWD: 60000 },
   { id: 'guanjie',   name: '冠杰', color: '#8A6E4E', short: '杰', budgetTWD: 60000 },
 ];
 
