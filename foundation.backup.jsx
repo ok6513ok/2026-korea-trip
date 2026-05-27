@@ -138,33 +138,88 @@ const DAYS = [
   {
     idx: 0, date: '12/29', dow: '週一', label: 'Day 1', title: '出發 · 桃園機場',
     weather: { icon: 'sun', t: '18°C / 24°C', desc: '晴' },
-    items: [],
+    items: [
+      { id:'d0-1', time:'08:00', dur:'60 min',  type:'tx',     title:'集合 桃園機場 T2',     addr:'桃園國際機場第二航廈',   note:'航班 BR 160',            participants: ALL7 },
+      { id:'d0-2', time:'10:05', dur:'165 min', type:'tx',     title:'BR 160 起飛',          addr:'桃園 TPE → 仁川 ICN',   note:'預計 13:10 抵達首爾',    participants: ALL7 },
+      { id:'d0-3', time:'13:30', dur:'60 min',  type:'tx',     title:'仁川機場 T1 入境',     addr:'仁川國際機場',           note:'入境 + 領 T-money',       participants: ALL7 },
+      { id:'d0-4', time:'15:00', dur:'70 min',  type:'tx',     title:'機場快線 AREX',        addr:'機場 → 首爾站',          note:'直達車 9000 KRW',         participants: ALL7 },
+      { id:'d0-5', time:'16:30', dur:'30 min',  type:'stay',   title:'入住 L7 Myeongdong',   addr:'首爾中區明洞 8 街 137',  note:'確認房間分配',             participants: ALL7 },
+      { id:'d0-6', time:'18:30', dur:'90 min',  type:'food',   title:'孔陵一隻雞 明洞店',     addr:'明洞 4 街 12',           note:'點 2 隻 + 海鮮煎餅',      participants: ALL7 },
+      { id:'d0-7', time:'20:30', dur:'90 min',  type:'shop',   title:'明洞商圈逛街',          addr:'明洞主街',               note:'樂天免稅 / Olive Young',  participants: ALL7 },
+    ],
   },
   {
     idx: 1, date: '12/30', dow: '週二', label: 'Day 2', title: '抵達 · 明洞',
     weather: { icon: 'cloud', t: '-2°C / 4°C', desc: '多雲' },
-    items: [],
+    items: [
+      { id:'d1-1', time:'09:00', dur:'60 min',  type:'food',   title:'Isaac Toast 早餐',     addr:'明洞分店',               note:'人氣火腿起司吐司',         participants: ALL7 },
+      { id:'d1-2', time:'11:00', dur:'120 min', type:'shop',   title:'明洞商圈採購',          addr:'明洞主街',               note:'Olive Young / 樂天免稅',   participants: ALL7 },
+      { id:'d1-3', time:'13:30', dur:'90 min',  type:'food',   title:'午餐 明洞餃子',         addr:'明洞 10 街 10',           note:'刀削麵 + 餃子',            participants: ALL7 },
+      { id:'d1-4', time:'15:30', dur:'90 min',  type:'ticket', title:'景福宮參觀',            addr:'鍾路區社稷路 161',        note:'穿韓服免門票',             participants: ALL7 },
+      { id:'d1-5', time:'19:00', dur:'90 min',  type:'food',   title:'晚餐 燒肉',             addr:'明洞燒肉街',              note:'多點幾份',                 participants: ALL7 },
+    ],
   },
   {
     idx: 2, date: '12/31', dow: '週三', label: 'Day 3', title: '古宮 · 弘大跨年',
     weather: { icon: 'snow', t: '-5°C / 1°C', desc: '小雪' },
-    items: [],
+    items: [
+      { id:'d2-1', time:'09:00', dur:'45 min',  type:'food',   title:'Isaac Toast 早餐',     addr:'明洞分店',           note:'人氣火腿起司吐司', participants: ALL7 },
+      { id:'d2-2', time:'10:30', dur:'150 min', type:'ticket', title:'景福宮 + 韓服體驗',     addr:'鍾路區社稷路 161',   note:'穿韓服免門票',     participants: ['yixuan','annie','yating','chenyu','guanjie'] },
+      { id:'d2-3', time:'10:30', dur:'120 min', type:'shop',   title:'東大門逛街',            addr:'東大門設計廣場',     note:'苡如弘昇自由行',   participants: ['yiru','hongsheng'] },
+      { id:'d2-4', time:'13:00', dur:'90 min',  type:'ticket', title:'北村韓屋村散步',        addr:'鍾路區桂洞路',       note:'小聲，居民住宅',   participants: ['yixuan','annie','yating','chenyu','guanjie'] },
+      { id:'d2-5', time:'14:30', dur:'90 min',  type:'food',   title:'三清洞咖啡 Onion',      addr:'三清洞 28-1',        note:'下午茶 + 拍照',    participants: ['yixuan','annie','yating','chenyu','guanjie'] },
+      { id:'d2-6', time:'17:00', dur:'60 min',  type:'stay',   title:'回飯店休息',            addr:'L7 Myeongdong',      note:'換衣服暖身',       participants: ALL7 },
+      { id:'d2-7', time:'19:00', dur:'90 min',  type:'food',   title:'劉家辣炒年糕 弘大店',   addr:'麻浦區弘益路 6 街',  note:'弘昇強烈推薦',     participants: ALL7 },
+      { id:'d2-8', time:'22:30', dur:'120 min', type:'ticket', title:'弘大跨年街頭活動',      addr:'弘大商圈',           note:'多注意安全 ⚠',    participants: ALL7 },
+    ],
   },
   {
     idx: 3, date: '01/01', dow: '週四', label: 'Day 4', title: '南山塔 · 購物',
     weather: { icon: 'sun', t: '-3°C / 3°C', desc: '晴' },
-    items: [],
+    items: [
+      { id:'d3-1', time:'09:30', dur:'45 min',  type:'food',   title:'明洞餃子',             addr:'明洞 10 街 10',       note:'刀削麵 + 餃子',    participants: ALL7 },
+      { id:'d3-2', time:'11:00', dur:'180 min', type:'ticket', title:'南山塔 N Seoul Tower', addr:'龍山區南山公園路 105', note:'纜車上山 + 觀景台', participants: ALL7 },
+      { id:'d3-3', time:'14:00', dur:'120 min', type:'shop',   title:'南大門市場',           addr:'中區南大門市場 4 街',  note:'紀念品 / 海苔',    participants: ['yixuan','annie','yating','yiru','guanjie'] },
+      { id:'d3-4', time:'14:00', dur:'120 min', type:'shop',   title:'樂天百貨 本店',         addr:'中區乙支路 30',        note:'承毓弘昇自由活動',  participants: ['chenyu','hongsheng'] },
+      { id:'d3-5', time:'17:00', dur:'90 min',  type:'shop',   title:'ALAND 購物',           addr:'明洞 ALAND',          note:'逛逛逛',            participants: ['yixuan','annie','yating'] },
+      { id:'d3-6', time:'19:30', dur:'90 min',  type:'food',   title:'馬鈴薯排骨湯',          addr:'中區明洞 9 街',        note:'最後一晚大餐',      participants: ALL7 },
+    ],
   },
   {
     idx: 4, date: '01/02', dow: '週五', label: 'Day 5', title: '回程',
     weather: { icon: 'cloud', t: '-1°C / 5°C', desc: '陰' },
-    items: [],
+    items: [
+      { id:'d4-1', time:'09:00', dur:'30 min',  type:'stay', title:'退房 L7 Myeongdong', addr:'明洞 8 街 137',      note:'寄放行李到 11:00', participants: ALL7 },
+      { id:'d4-2', time:'10:00', dur:'80 min',  type:'tx',   title:'搭乘 6015 機場巴士',  addr:'明洞站旁站牌',        note:'18,000 KRW / 人',  participants: ALL7 },
+      { id:'d4-3', time:'13:30', dur:'150 min', type:'tx',   title:'仁川機場辦理登機',    addr:'仁川機場 T1',         note:'退稅 + 用完韓元',  participants: ALL7 },
+      { id:'d4-4', time:'16:00', dur:'170 min', type:'tx',   title:'BR 161 起飛回桃園',   addr:'仁川 ICN → 桃園 TPE', note:'19:50 落地台北',   participants: ALL7 },
+    ],
   },
 ];
 
-const STAYS = [];
+const STAYS = [
+  {
+    id:'st1', name:'L7 Myeongdong by Lotte', tag:'含早餐 · 3 晚',
+    nights: 3, checkIn: '12/30 (二) 15:00', checkOut: '01/02 (五) 11:00',
+    addr: '서울 중구 명동 8길 137 (L7 明洞)',
+    addrShort: '首爾中區明洞 8 街 137',
+    phone: '+82-2-6310-1000',
+    code: '訂房代碼 KR2026 · 早餐券每人 1 張 / 日',
+    notes: '飯店一樓有 7-11，地下二樓直通明洞站 8 號出口。',
+    covers: [1,2,3,4],
+  },
+];
 
 // expense entries
-const EXPENSES_INIT = [];
+const EXPENSES_INIT = [
+  { id:'e1', day:1, date:'12/30', item:'機場快線 AREX × 7',       cat:'tx',     krw:63000,  payer:'chenyu',    split:['yixuan','annie','yating','yiru','chenyu','hongsheng','guanjie'], note:'直達車 9000/人' },
+  { id:'e2', day:1, date:'12/30', item:'安妮住宿費 (安妮房)',       cat:'stay',   krw:780000, payer:'annie',     split:['annie'],                                                          note:'個人包房 3 晚' },
+  { id:'e3', day:1, date:'12/30', item:'孔陵一隻雞 (兩隻)',         cat:'food',   krw:84000,  payer:'yixuan',    split:['yixuan','annie','yating','yiru','chenyu','hongsheng','guanjie'], note:'+ 海鮮煎餅' },
+  { id:'e4', day:2, date:'12/31', item:'Isaac Toast × 7',          cat:'food',   krw:35000,  payer:'guanjie',   split:['yixuan','annie','yating','yiru','chenyu','hongsheng','guanjie'], note:'帶上路吃' },
+  { id:'e5', day:2, date:'12/31', item:'景福宮韓服租借 × 5',        cat:'ticket', krw:75000,  payer:'yating',    split:['yixuan','annie','yating','chenyu','guanjie'],                     note:'2 小時方案' },
+  { id:'e6', day:2, date:'12/31', item:'Olive Young 面膜',          cat:'shop',   krw:54000,  payer:'chenyu',    split:['yating','chenyu'],                                                note:'兩人合購' },
+  { id:'e7', day:2, date:'12/31', item:'三清洞 Onion 咖啡',         cat:'food',   krw:42000,  payer:'hongsheng', split:['yixuan','annie','yating','yiru','chenyu','hongsheng','guanjie'], note:'下午茶' },
+  { id:'e8', day:2, date:'12/31', item:'劉家辣炒年糕',               cat:'food',   krw:49000,  payer:'yiru',      split:['yixuan','annie','yiru','hongsheng'],                              note:'弘昇想吃' },
+];
 
 Object.assign(window, { T, Icon, ALL7, MEMBERS, TRIP, CATS, DAYS, STAYS, EXPENSES_INIT });

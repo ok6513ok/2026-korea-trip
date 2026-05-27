@@ -112,6 +112,7 @@ function App() {
               itineraryItems: lsGet('familyTrip_itineraryItems', fallbackItin),
               stays:          lsGet('familyTrip_stays',          STAYS.map(s => ({ ...s }))),
               memberBudgets:  lsGet('familyTrip_memberBudgets',  memberDefaults),
+              dataVersion:    1,
             };
             sync.setDoc(tripRef, initData).catch(e => console.warn('[FS seed]', e));
             fsReadyRef.current = true;
@@ -121,14 +122,42 @@ function App() {
 
           const data = snap.data();
 
+          // ── 正式發布：版本檢查，舊資料自動清除 ──────────────
+          // PRODUCTION_DATA_VERSION: 增加此數字可觸發一次性 Firestore 重置
+          const PRODUCTION_DATA_VERSION = 1;
+
           // First snapshot with existing data: replace local state with Firestore data
           if (!fsReadyRef.current) {
             fsReadyRef.current = true;
+
+            // If dataVersion is missing or outdated → wipe Firestore to empty state
+            if (!data.dataVersion || data.dataVersion < PRODUCTION_DATA_VERSION) {
+              const memberDefaults = {};
+              MEMBERS.forEach(m => { memberDefaults[m.id] = 50000; });
+              const emptyData = {
+                expenses:       [],
+                stays:          [],
+                itineraryItems: { 0:[], 1:[], 2:[], 3:[], 4:[] },
+                memberBudgets:  memberDefaults,
+                dataVersion:    PRODUCTION_DATA_VERSION,
+              };
+              sync.setDoc(tripRef, emptyData)
+                .then(() => console.info('[FS] 正式發布重置完成，資料版本:', PRODUCTION_DATA_VERSION))
+                .catch(e => console.warn('[FS reset]', e));
+              // Clear localStorage so React state also starts empty
+              localStorage.removeItem('familyTrip_expenses');
+              localStorage.removeItem('familyTrip_itineraryItems');
+              localStorage.removeItem('familyTrip_stays');
+              // State is already empty from EXPENSES_INIT=[], STAYS=[], DAYS items=[]
+              console.info('[FS] 偵測到舊版資料，執行一次性清除...');
+              return;
+            }
+
             if (data.expenses)       setExpenses(data.expenses);
             if (data.itineraryItems) setAllItinItems(normalizeItinItems(data.itineraryItems));
             if (data.stays)          setStays(data.stays);
             if (data.memberBudgets)  setMemberBudgets(data.memberBudgets);
-            console.info('[FS] 從 Firestore 載入資料完成');
+            console.info('[FS] 從 Firestore 載入資料完成，版本:', data.dataVersion);
             return;
           }
 
@@ -359,7 +388,7 @@ const topBarFor = (t) => ({
             setEditItinDay(null);
           }}
           onDelete={editItinItem ? () => {
-            const oldDay = editItinItem.dayIdx ?? editItinDay ?? (tab === 'itinerary' ? itineraryDay : TRIP.todayIndex);
+            const oldDay = editItinItem.dayIdx ?? editItinDay ?? (tab === "itinerary" ? itineraryDay : TRIP.todayIndex);
             handleDeleteItinItem(editItinItem.id, oldDay);
             setShowItinForm(false);
             setEditItinItem(null);
@@ -399,4 +428,4 @@ const topBarFor = (t) => ({
   );
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
