@@ -22,6 +22,15 @@ function computeSettlement(expenses) {
   const netKRW = {};
   MEMBERS.forEach(m => { netKRW[m.id] = shareKRW[m.id] - paidKRW[m.id]; });
 
+  // 套用「已收款」records — 不影響總花費，只影響分帳結算
+  // from 已付給 to → from 的應付減少，to 的應收減少
+  expenses.forEach(e => {
+    (e.collections || []).forEach(col => {
+      if (netKRW[col.from] !== undefined) netKRW[col.from] -= col.amountKRW;
+      if (netKRW[col.to]   !== undefined) netKRW[col.to]   += col.amountKRW;
+    });
+  });
+
   // 最小化交易的貪婪演算法
   const debtors   = MEMBERS.filter(m => netKRW[m.id] >  0.5).map(m => ({ id: m.id, name: m.name, amt: netKRW[m.id] }));
   const creditors = MEMBERS.filter(m => netKRW[m.id] < -0.5).map(m => ({ id: m.id, name: m.name, amt: -netKRW[m.id] }));
@@ -226,7 +235,8 @@ function ScreenSplit({ expenses, onClose }) {
           <div style={{ fontSize: 11, color: T.ink3, lineHeight: 1.6 }}>
             <strong style={{ color: T.ink2 }}>付款人</strong>：實際刷卡或付現的人<br/>
             <strong style={{ color: T.ink2 }}>應分攤</strong>：此人實際需負擔的費用<br/>
-            <strong style={{ color: T.ink2 }}>轉帳清單</strong>：已最佳化，用最少筆數完成結算
+            <strong style={{ color: T.ink2 }}>轉帳清單</strong>：已最佳化，用最少筆數完成結算<br/>
+            <strong style={{ color: T.green }}>已收款</strong>：在「編輯消費」標記已收的金額會自動從結算中扣除
           </div>
         </div>
       </div>

@@ -313,6 +313,8 @@ function ScreenAddExpense({ onClose, onSave, editExpense, onDelete }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [note, setNote] = useState(editExpense?.note || '');
   const [confirmDel, setConfirmDel] = useState(false);
+  // collections: records of already-collected payments (only for settlement page)
+  const [collections, setCollections] = useState(editExpense?.collections || []);
 
   const numAmount = parseInt(amount || '0', 10);
   const krw = currency === 'KRW' ? numAmount : numAmount * TRIP.rate.TWD_KRW;
@@ -329,6 +331,21 @@ function ScreenAddExpense({ onClose, onSave, editExpense, onDelete }) {
     setSplitSet(ns);
   };
 
+  const toggleCollection = (memberId) => {
+    const shareAmt = splitIds.length > 0 ? Math.round(krw / splitIds.length) : 0;
+    const already = collections.find(c => c.from === memberId);
+    if (already) {
+      setCollections(collections.filter(c => c.from !== memberId));
+    } else {
+      setCollections([...collections, {
+        from: memberId,
+        to: payer,
+        amountKRW: shareAmt,
+        receivedAt: new Date().toISOString(),
+      }]);
+    }
+  };
+
   const save = () => {
     onSave({
       id:   editExpense?.id || 'e' + Date.now(),
@@ -338,6 +355,7 @@ function ScreenAddExpense({ onClose, onSave, editExpense, onDelete }) {
       cat, krw, payer,
       split: splitIds,
       note,
+      collections,
     });
   };
 
@@ -590,6 +608,68 @@ function ScreenAddExpense({ onClose, onSave, editExpense, onDelete }) {
             />
           </FieldRow>
         </Card>
+
+        {/* 收款狀態 — 只在編輯模式且有分帳對象（非付款人）時顯示 */}
+        {editExpense && splitIds.filter(id => id !== payer).length > 0 && (
+          <Card pad={14}>
+            <FieldLabel>收款狀態</FieldLabel>
+            <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {splitIds
+                .filter(id => id !== payer)
+                .map(memberId => {
+                  const m = findMember(memberId);
+                  const collected = collections.find(c => c.from === memberId);
+                  const shareAmt = splitIds.length > 0 ? Math.round(krw / splitIds.length) : 0;
+                  return (
+                    <div key={memberId} style={{
+                      display: 'flex', alignItems: 'center', gap: 10,
+                      padding: '10px 12px', borderRadius: 14,
+                      background: collected ? T.greenSoft : T.bgSoft,
+                    }}>
+                      <Avatar member={m} size={28}/>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: T.ink }}>
+                          {m?.name}
+                        </div>
+                        <div style={{ fontSize: 11, color: T.ink3, marginTop: 2 }}>
+                          應收 {fmtKRW(shareAmt)}
+                          {collected && (
+                            <span style={{ color: T.green, fontWeight: 600, marginLeft: 6 }}>
+                              · 已收款 {collected.receivedAt ? new Date(collected.receivedAt).toLocaleDateString('zh-TW',{month:'numeric',day:'numeric'}) : ''}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => toggleCollection(memberId)}
+                        style={{
+                          border: 'none', cursor: 'pointer',
+                          padding: '7px 13px', borderRadius: 999,
+                          background: collected ? T.green : T.divider,
+                          color: collected ? '#fff' : T.ink3,
+                          fontSize: 12, fontWeight: 700, fontFamily: T.font,
+                          display: 'flex', alignItems: 'center', gap: 5,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {collected
+                          ? <><Icon name="check" size={13} color="#fff" strokeWidth={2.5}/> 已收款</>
+                          : '標記收款'
+                        }
+                      </button>
+                    </div>
+                  );
+                })
+              }
+            </div>
+            <div style={{
+              marginTop: 10, padding: '8px 10px', borderRadius: 10,
+              background: T.primarySoft, fontSize: 11, color: T.primary,
+            }}>
+              ℹ️ 標記已收款後，分帳頁的結算金額會自動扣除
+            </div>
+          </Card>
+        )}
 
         {/* 刪除此消費 — 只在編輯模式顯示 */}
         {editExpense && onDelete && !confirmDel && (

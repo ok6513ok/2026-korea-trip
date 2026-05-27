@@ -422,7 +422,7 @@ const topBarFor = (t) => ({
       )}
 
       {showSplit && (
-        <ScreenSplit expenses={expenses} e={() => setShowSplit(false)}/>
+        <ScreenSplit expenses={expenses} onClose={() => setShowSplit(false)}/>
       )}
     </div>
   );
