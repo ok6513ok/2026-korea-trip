@@ -518,7 +518,7 @@ const stayInputStyle = {
 function StayFieldCard({ children }) {
   return (
     <div style={{
-      background: '#fff', borderRadius: 18,
+      background: '#fff', borderRadius: 18, overflow: 'hidden',
       boxShadow: T.shadowCard, border: '1px solid rgba(236,229,213,0.6)',
     }}>
       {children}
@@ -548,8 +548,8 @@ function StayDivider() {
 function StayDayPicker({ current, onSelect, onClose }) {
   return (
     <div style={{
-      position: 'fixed', inset: 0,
-      background: 'rgba(0,0,0,0.35)', zIndex: 300,
+      position: 'absolute', inset: 0,
+      background: 'rgba(0,0,0,0.35)', zIndex: 200,
       display: 'flex', alignItems: 'flex-end',
     }} onClick={onClose}>
       <div style={{
@@ -643,15 +643,14 @@ function StayForm({ stay, onClose, onSave, onDelete }) {
 
   return (
     <div style={{
-      position: 'fixed', inset: 0,
-      width: '100%', height: '100dvh',
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      maxWidth: 430, margin: '0 auto',
       background: T.bg, zIndex: 100,
-      overflowY: 'auto', WebkitOverflowScrolling: 'touch',
+      display: 'flex', flexDirection: 'column',
       fontFamily: T.font, color: T.ink,
     }}>
       {/* header */}
       <div style={{
-        position: 'sticky', top: 0, zIndex: 110,
         padding: 'calc(env(safe-area-inset-top, 0px) + 20px) 16px 12px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         background: T.bg,
@@ -674,7 +673,7 @@ function StayForm({ stay, onClose, onSave, onDelete }) {
       </div>
 
       {/* body */}
-      <div style={{ padding: '4px 16px', paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 140px)', display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div style={{ flex: 1, overflow: 'auto', padding: '4px 16px 40px', display: 'flex', flexDirection: 'column', gap: 14 }}>
 
         {/* 基本資訊 */}
         <StayFieldCard>
@@ -727,8 +726,7 @@ function StayForm({ stay, onClose, onSave, onDelete }) {
           <StayDivider/>
           <StayRow label="地圖連結" icon="map">
             <input value={mapUrl} onChange={e => setMapUrl(e.target.value)}
-              placeholder="Naver / KakaoMap / Google Maps"
-              style={{ ...stayInputStyle, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}/>
+              placeholder="Naver / KakaoMap / Google Maps" style={stayInputStyle}/>
           </StayRow>
           <StayDivider/>
           <StayRow label="電話" icon="phone">
