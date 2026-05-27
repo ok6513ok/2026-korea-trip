@@ -156,9 +156,9 @@ function ScreenDashboard({ expenses, memberBudgets = {}, onNav, onAddExpense, to
           </div>
           <div style={{ fontSize: 14, fontWeight: 700, color: T.ink, letterSpacing:-0.2,
             display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden',
-          }}>{stay.name}</div>
+          }}>{stay?.name || '尚未新增住宿'}</div>
           <div style={{ fontSize: 11, color: T.ink3, marginTop: 'auto' }}>
-            {stay.tag}
+            {stay?.tag || '點此前往新增'}
           </div>
         </Card>
 
@@ -183,35 +183,41 @@ function ScreenDashboard({ expenses, memberBudgets = {}, onNav, onAddExpense, to
       }/>
       <div style={{ padding: '0 16px' }}>
         <Card pad={6}>
-          {expenses.slice(-3).reverse().map((e, i, arr) => {
-            const c = findCat(e.cat);
-            const p = findMember(e.payer);
-            return (
-              <div key={e.id} style={{
-                display:'flex', alignItems:'center', gap:12, padding: '12px 10px',
-                borderBottom: i < arr.length - 1 ? '1px solid ' + T.divider : 'none',
-              }}>
-                <CatTile catId={e.cat} size={36}/>
-                <div style={{ flex:1, minWidth:0 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: T.ink,
-                    overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                    {e.item}
+          {expenses.length === 0 ? (
+            <div style={{ padding: '28px 16px', textAlign:'center', fontSize: 13, color: T.ink3 }}>
+              尚未有消費紀錄
+            </div>
+          ) : (
+            expenses.slice(-3).reverse().map((e, i, arr) => {
+              const c = findCat(e.cat);
+              const p = findMember(e.payer);
+              return (
+                <div key={e.id} style={{
+                  display:'flex', alignItems:'center', gap:12, padding: '12px 10px',
+                  borderBottom: i < arr.length - 1 ? '1px solid ' + T.divider : 'none',
+                }}>
+                  <CatTile catId={e.cat} size={36}/>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: T.ink,
+                      overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                      {e.item}
+                    </div>
+                    <div style={{ fontSize: 11, color: T.ink3, marginTop: 2, display:'flex', gap:6, alignItems:'center' }}>
+                      <span>{e.date}</span>
+                      <span style={{ width:3, height:3, borderRadius:'50%', background: T.ink4 }}/>
+                      <span>{p?.name || '未知'}付款</span>
+                    </div>
                   </div>
-                  <div style={{ fontSize: 11, color: T.ink3, marginTop: 2, display:'flex', gap:6, alignItems:'center' }}>
-                    <span>{e.date}</span>
-                    <span style={{ width:3, height:3, borderRadius:'50%', background: T.ink4 }}/>
-                    <span>{p.name}付款</span>
+                  <div style={{ textAlign: 'right' }}>
+                    <Money krw={e.krw} currency="KRW" size="s"/>
+                    <div style={{ fontSize: 10, color: T.ink3, marginTop: 2 }}>
+                      ≈ {fmtTWD(krwToTwd(e.krw))}
+                    </div>
                   </div>
                 </div>
-                <div style={{ textAlign: 'right' }}>
-                  <Money krw={e.krw} currency="KRW" size="s"/>
-                  <div style={{ fontSize: 10, color: T.ink3, marginTop: 2 }}>
-                    ≈ {fmtTWD(krwToTwd(e.krw))}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </Card>
       </div>
 
@@ -414,8 +420,8 @@ function ScreenToday({ expenses, todayItems }) {
           <div style={{ flex:1, minWidth:0 }}>
             <div style={{ fontSize: 14.5, fontWeight: 700, color: T.ink, letterSpacing:-0.2,
               overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap',
-            }}>{stay.name}</div>
-            <div style={{ fontSize: 12, color: T.ink3, marginTop: 3 }}>{stay.addrShort}</div>
+            }}>{stay?.name || '尚未新增住宿'}</div>
+            <div style={{ fontSize: 12, color: T.ink3, marginTop: 3 }}>{stay?.addrShort || '請前往住宿頁新增'}</div>
           </div>
           <button style={{
             width: 40, height: 40, borderRadius: 12, border:'none',
