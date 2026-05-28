@@ -2308,25 +2308,52 @@ function ScreenAddExpense({ onClose, onSave, editExpense, onDelete }) {
   const [collections, setCollections] = useState(editExpense?.collections || []);
   // expenseSplitMode: 'equal' (均分) | 'custom' (自訂金額)
   const [expenseSplitMode, setExpenseSplitMode] = useState(editExpense?.splitMode || 'equal');
-  // customSplits: { memberId: amountKRW }
-  const [customSplits, setCustomSplits] = useState(editExpense?.customSplits || {});
+  // customSplitInputs: { memberId: { currency: 'KRW'|'TWD', amount: rawString } }
+  const [customSplitInputs, setCustomSplitInputs] = useState(() => {
+    if (editExpense?.customSplitInputs) return editExpense.customSplitInputs;
+    if (editExpense?.customSplits) {
+      return Object.fromEntries(
+        Object.entries(editExpense.customSplits).map(([id, krwAmt]) => [id, { currency: 'KRW', amount: String(krwAmt || 0) }])
+      );
+    }
+    return {};
+  });
 
   const numAmount = parseInt(amount || '0', 10);
-  const krw = currency === 'KRW' ? numAmount : numAmount * TRIP.rate.TWD_KRW;
-  const twd = currency === 'TWD' ? numAmount : numAmount / TRIP.rate.TWD_KRW;
 
   const splitIds = splitMode === 'all'
     ? MEMBERS.map(m => m.id)
     : [...splitSet];
-  const perPerson = splitIds.length > 0 ? krw / splitIds.length : 0;
 
-  // custom split validation
+  // Derive customSplits (KRW) from customSplitInputs
+  const customSplits = {};
+  if (expenseSplitMode === 'custom') {
+    splitIds.forEach(id => {
+      const inp = customSplitInputs[id] || { currency: 'KRW', amount: '0' };
+      const rawAmt = Number(String(inp.amount || '0').replace(/[^\d]/g, '')) || 0;
+      customSplits[id] = inp.currency === 'KRW'
+        ? rawAmt
+        : Math.round(rawAmt * TRIP.rate.TWD_KRW);
+    });
+  }
+
+  // customTotal = total KRW in custom mode
   const customTotal = expenseSplitMode === 'custom'
-    ? splitIds.reduce((s, id) => s + (Number(customSplits[id] || 0)), 0)
+    ? splitIds.reduce((s, id) => s + (customSplits[id] || 0), 0)
     : 0;
-  const customValid = expenseSplitMode !== 'custom' ||
-    (splitIds.length > 0 && Math.round(customTotal) === Math.round(krw));
-  const canSave = numAmount > 0 && customValid;
+
+  // krw/twd: in custom mode derived from customTotal; in equal mode from amount input
+  const krw = expenseSplitMode === 'custom'
+    ? customTotal
+    : (currency === 'KRW' ? numAmount : Math.round(numAmount * TRIP.rate.TWD_KRW));
+  const twd = expenseSplitMode === 'custom'
+    ? customTotal / TRIP.rate.TWD_KRW
+    : (currency === 'TWD' ? numAmount : numAmount / TRIP.rate.TWD_KRW);
+
+  const perPerson = splitIds.length > 0 ? krw / splitIds.length : 0;
+  const canSave = expenseSplitMode === 'custom'
+    ? (customTotal > 0 && splitIds.length > 0)
+    : numAmount > 0;
 
   const toggleSplit = (id) => {
     const ns = new Set(splitSet);
@@ -2352,16 +2379,20 @@ function ScreenAddExpense({ onClose, onSave, editExpense, onDelete }) {
   };
 
   const save = () => {
+    const finalKrw = expenseSplitMode === 'custom' ? Math.round(customTotal) : krw;
     onSave({
       id:   editExpense?.id || 'e' + Date.now(),
       day:  selectedDayIdx,
       date: DAYS[selectedDayIdx].date,
       item: name || '未命名消費',
-      cat, krw, payer,
+      cat, krw: finalKrw, payer,
       split: splitIds,
       splitMode: expenseSplitMode,
       customSplits: expenseSplitMode === 'custom'
-        ? Object.fromEntries(splitIds.map(id => [id, Number(customSplits[id] || 0)]))
+        ? Object.fromEntries(splitIds.map(id => [id, Math.round(customSplits[id] || 0)]))
+        : {},
+      customSplitInputs: expenseSplitMode === 'custom'
+        ? Object.fromEntries(splitIds.map(id => [id, customSplitInputs[id] || { currency: 'KRW', amount: '0' }]))
         : {},
       note,
       collections,
@@ -2424,38 +2455,60 @@ function ScreenAddExpense({ onClose, onSave, editExpense, onDelete }) {
             </div>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 12, color: T.ink3, fontWeight: 600, letterSpacing: 1 }}>金額</div>
+            <div style={{ fontSize: 12, color: T.ink3, fontWeight: 600, letterSpacing: 1 }}>
+              {expenseSplitMode === 'custom' ? '自訂合計（自動）' : '金額'}
+            </div>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 6, marginTop: 6 }}>
-              <span style={{ fontSize: 22, fontWeight: 600, color: T.ink3 }}>
+              <span style={{ fontSize: 22, fontWeight: 600, color: expenseSplitMode === 'custom' ? T.green : T.ink3 }}>
                 {currency === 'KRW' ? '₩' : 'NT$'}
               </span>
-              <input
-                inputMode="numeric"
-                value={amount}
-                onChange={e => setAmount(e.target.value.replace(/[^\d]/g, ''))}
-                placeholder="0"
-                style={{
-                  border: 'none', outline: 'none', background: 'transparent',
-                  fontFamily: T.font, fontSize: 40, fontWeight: 700, color: T.ink,
-                  letterSpacing: -1, width: 200, textAlign: 'center',
-                }}
-              />
+              {expenseSplitMode === 'custom' ? (
+                <span style={{
+                  fontFamily: T.font, fontSize: 40, fontWeight: 700,
+                  color: customTotal > 0 ? T.ink : T.ink4,
+                  letterSpacing: -1, minWidth: 60, textAlign: 'center', display: 'inline-block',
+                  fontVariantNumeric: 'tabular-nums',
+                }}>
+                  {currency === 'KRW'
+                    ? Math.round(customTotal).toLocaleString()
+                    : Math.round(customTotal / TRIP.rate.TWD_KRW).toLocaleString()}
+                </span>
+              ) : (
+                <input
+                  inputMode="numeric"
+                  value={amount}
+                  onChange={e => setAmount(e.target.value.replace(/[^\d]/g, ''))}
+                  placeholder="0"
+                  style={{
+                    border: 'none', outline: 'none', background: 'transparent',
+                    fontFamily: T.font, fontSize: 40, fontWeight: 700, color: T.ink,
+                    letterSpacing: -1, width: 200, textAlign: 'center',
+                  }}
+                />
+              )}
             </div>
-            {numAmount > 0 && (
+            {expenseSplitMode === 'custom' && customTotal > 0 && (
+              <div style={{ fontSize: 12, color: T.ink3, marginTop: 2 }}>
+                ≈ {currency === 'KRW' ? fmtTWD(customTotal / TRIP.rate.TWD_KRW) : fmtKRW(Math.round(customTotal))}
+              </div>
+            )}
+            {expenseSplitMode !== 'custom' && numAmount > 0 && (
               <div style={{ fontSize: 12, color: T.ink3, marginTop: 2 }}>
                 ≈ {currency === 'KRW' ? fmtTWD(twd) : fmtKRW(krw)}
               </div>
             )}
           </div>
-          <div style={{ display: 'flex', gap: 6, marginTop: 16, justifyContent: 'center' }}>
-            {presets.map(p => (
-              <button key={p} onClick={() => setAmount(String(p))} style={{
-                border: '1px solid ' + T.divider, background: '#fff',
-                color: T.ink2, cursor: 'pointer', padding: '6px 12px',
-                borderRadius: 999, fontFamily: T.font, fontSize: 12, fontWeight: 600,
-              }}>+{p.toLocaleString()}</button>
-            ))}
-          </div>
+          {expenseSplitMode !== 'custom' && (
+            <div style={{ display: 'flex', gap: 6, marginTop: 16, justifyContent: 'center' }}>
+              {presets.map(p => (
+                <button key={p} onClick={() => setAmount(String(p))} style={{
+                  border: '1px solid ' + T.divider, background: '#fff',
+                  color: T.ink2, cursor: 'pointer', padding: '6px 12px',
+                  borderRadius: 999, fontFamily: T.font, fontSize: 12, fontWeight: 600,
+                }}>+{p.toLocaleString()}</button>
+              ))}
+            </div>
+          )}
         </Card>
 
         {/* name + date */}
@@ -2627,48 +2680,60 @@ function ScreenAddExpense({ onClose, onSave, editExpense, onDelete }) {
             <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
               {splitIds.map(id => {
                 const m = findMember(id);
+                const inp = customSplitInputs[id] || { currency: 'KRW', amount: '' };
+                const mCur = inp.currency || 'KRW';
                 return (
                   <div key={id} style={{
-                    display: 'flex', alignItems: 'center', gap: 10,
+                    display: 'flex', alignItems: 'center', gap: 8,
                     padding: '10px 12px', borderRadius: 14, background: T.bgSoft,
                   }}>
                     <Avatar member={m} size={28}/>
                     <span style={{ fontSize: 13, fontWeight: 600, color: T.ink, flex: 1 }}>{m.name}</span>
-                    <span style={{ fontSize: 13, color: T.ink3, fontWeight: 600 }}>₩</span>
+                    {/* per-member currency toggle */}
+                    <div style={{
+                      display: 'inline-flex', padding: 2, borderRadius: 999,
+                      background: '#fff', border: '1px solid ' + T.divider, flexShrink: 0,
+                    }}>
+                      {['KRW', 'TWD'].map(c => (
+                        <button key={c}
+                          onClick={() => setCustomSplitInputs(prev => ({
+                            ...prev, [id]: { currency: c, amount: prev[id]?.amount || '' }
+                          }))}
+                          style={{
+                            border: 'none',
+                            background: mCur === c ? T.primary : 'transparent',
+                            color: mCur === c ? '#fff' : T.ink3,
+                            cursor: 'pointer', padding: '3px 7px', borderRadius: 999,
+                            fontFamily: T.font, fontSize: 10, fontWeight: 700,
+                          }}>{c === 'KRW' ? '₩' : 'NT$'}</button>
+                      ))}
+                    </div>
                     <input
                       inputMode="numeric"
-                      value={customSplits[id] != null && customSplits[id] !== 0 ? String(customSplits[id]) : ''}
+                      value={inp.amount || ''}
                       onChange={ev => {
-                        const v = parseInt(ev.target.value.replace(/[^\d]/g, ''), 10) || 0;
-                        setCustomSplits(prev => ({ ...prev, [id]: v }));
+                        const v = ev.target.value.replace(/[^\d]/g, '');
+                        setCustomSplitInputs(prev => ({ ...prev, [id]: { currency: mCur, amount: v } }));
                       }}
                       placeholder="0"
                       style={{
                         border: 'none', outline: 'none', background: 'transparent',
                         fontFamily: T.font, fontSize: 15, fontWeight: 700, color: T.ink,
-                        width: 90, textAlign: 'right', fontVariantNumeric: 'tabular-nums',
+                        width: 80, textAlign: 'right', fontVariantNumeric: 'tabular-nums',
                       }}
                     />
                   </div>
                 );
               })}
-              {/* 合計 vs 總額 */}
-              {numAmount > 0 && (
+              {/* 自訂合計顯示 */}
+              {customTotal > 0 && (
                 <div style={{
-                  padding: '10px 12px', borderRadius: 12,
-                  background: customValid ? T.greenSoft : T.roseSoft,
+                  padding: '10px 12px', borderRadius: 12, background: T.greenSoft,
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: customValid ? T.green : T.rose }}>
-                    {customValid ? '✓ 合計正確' : '自訂合計'}
-                  </span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: customValid ? T.green : T.rose, fontVariantNumeric: 'tabular-nums' }}>
-                    {fmtKRW(Math.round(customTotal))} / {fmtKRW(Math.round(krw))}
-                    {!customValid && (
-                      <span style={{ fontSize: 11, marginLeft: 6 }}>
-                        差 {fmtKRW(Math.round(Math.abs(krw - customTotal)))}
-                      </span>
-                    )}
+                  <span style={{ fontSize: 12, fontWeight: 600, color: T.green }}>自訂合計</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: T.green, fontVariantNumeric: 'tabular-nums' }}>
+                    {fmtKRW(Math.round(customTotal))} · ≈ {fmtTWD(customTotal / TRIP.rate.TWD_KRW)}
                   </span>
                 </div>
               )}
